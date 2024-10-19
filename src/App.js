@@ -1,23 +1,38 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
+import Dashboard from './Compnents/Dashboard/Dashboard';
+import Login from './Compnents/Login';
+import SubmitForm from './Compnents/SubmitForm/SubmitForm';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true); 
+    }
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+        <Routes>
+          {/* Redirect to login if not authenticated */}
+          <Route path="/" element={isAuthenticated ? <Dashboard /> : <Login />} />
+
+          {/* Login Route */}
+          <Route path="/login" element={<Login />} />
+
+          {/* Dashboard Route */}
+          <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
+
+          {/* SubmitForm Route */}
+          <Route path="/submit-form" element={isAuthenticated ? <SubmitForm /> : <Navigate to="/login" />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
