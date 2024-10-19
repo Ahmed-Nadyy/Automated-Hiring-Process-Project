@@ -6,11 +6,14 @@ import Login from './Compnents/Login';
 import SubmitForm from './Compnents/SubmitForm/SubmitForm';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); 
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token); 
+    if(token){
+      setIsAuthenticated(!isAuthenticated); 
+    }
+    
   }, []);
 
   return (
