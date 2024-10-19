@@ -8,12 +8,9 @@ import SubmitForm from './Compnents/SubmitForm/SubmitForm';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true); 
-    }
+    setIsAuthenticated(!!token); 
   }, []);
 
   return (
@@ -21,7 +18,7 @@ function App() {
       <Router>
         <Routes>
           {/* Redirect to login if not authenticated */}
-          <Route path="/" element={isAuthenticated ? <Dashboard /> : <Login />} />
+          <Route path="/" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
 
           {/* Login Route */}
           <Route path="/login" element={<Login />} />
