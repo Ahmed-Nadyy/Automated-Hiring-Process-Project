@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import '../input.css';
 import { useNavigate } from 'react-router-dom';
 import logo from '../Assets/Images/logo.jpg';
+import { useDispatch } from 'react-redux'; 
+import { login } from '../Redux/actions';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
 
     const handleLogin = async (e) => {
@@ -33,6 +36,7 @@ export default function Login() {
 
                 localStorage.setItem('token', token);
                 console.log('Login successful, token stored:', token);
+                dispatch(login());
                 navigate('/dashboard');
             } else if (response.status === 401) {
                 setErrorMessage('Invalid credentials');

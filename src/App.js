@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux'; 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Dashboard from './Compnents/Dashboard/Dashboard';
@@ -6,15 +7,9 @@ import Login from './Compnents/Login';
 import SubmitForm from './Compnents/SubmitForm/SubmitForm';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false); 
+  const isAuthenticated = useSelector((state) => state.isAuthenticated); 
+  const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if(token){
-      setIsAuthenticated(!isAuthenticated); 
-    }
-    
-  }, []);
 
   return (
     <div className="App">

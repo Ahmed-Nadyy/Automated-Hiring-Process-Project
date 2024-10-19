@@ -1,13 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../Assets/Images/logo.jpg';
+import { useDispatch } from 'react-redux'; 
+import { logout } from '../../Redux/actions'; 
 
 export default function Header() {
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        dispatch(logout());
         navigate('/login');
     };
     return (
