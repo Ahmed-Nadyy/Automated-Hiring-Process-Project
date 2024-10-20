@@ -25,7 +25,7 @@ function App() {
           <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
 
           {/* SubmitForm Route */}
-          <Route path="/submit-form" element={isAuthenticated ? <SubmitForm /> : <Navigate to="/login" />} />
+          <Route path="/submit-form" element= {<SubmitForm />} />
         </Routes>
       </Router>
     </div>

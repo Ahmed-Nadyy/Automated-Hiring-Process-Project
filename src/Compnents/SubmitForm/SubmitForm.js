@@ -37,7 +37,6 @@ export default function SubmitForm() {
 
             if (response.ok) {
                 console.log('Form submitted successfully');
-                window.location.href = 'https://fontawesome.com/';
             } else if (response.status === 400) {
                 console.error('CV file is required');
                 setFormValid(false);
