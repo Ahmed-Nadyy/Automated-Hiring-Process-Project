@@ -5,7 +5,7 @@ import spinner from '../../../Assets/Images/gear-spinner.svg'
 
 export default function Interviews() {
 
-  const [interviews, setInterviews] = useState([]);
+  const [interviews, setInterviews] = useState(null);
   const [selectedInterviewer, setSelectedInterviewer] = useState({});
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -75,7 +75,7 @@ export default function Interviews() {
   };
 
   const handleSelectAll = () => {
-    const allInterviewIDs = filteredInterviews.map((interview) => interview.ID);
+    const allInterviewIDs = filteredInterviews.map((interview) => interview.id);
     if (selectAll) {
       setSelectedInterviews([]);
     } else {
@@ -156,12 +156,58 @@ export default function Interviews() {
     }
   };
 
+  
+  const handleBulkAction = async (action) => {
+    if (selectedInterviews.length === 0) {
+      showToastMessage('No interviews selected for bulk action.', 'error');
+      return;
+    }
 
+    try {
+      console.log(selectedInterviews);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`https://daffodil-wary-straw.glitch.me/api/applicant/update-status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status: action === 'accept' ? 'Accepted' : 'Rejected',
+          applicantIds: selectedInterviews, 
+        }),
+      });
+
+      if (!response.ok) {
+        console.log(`Failed to ${action} interviews`);
+        showToastMessage(`Failed to ${action} interviews.`, 'error');
+        return;
+      }
+
+      const updatedInterviews = interviews.map((interview) =>
+        selectedInterviews.includes(interview.ID)
+          ? { ...interview, status: action === 'accept' ? 'Accepted' : 'Rejected' }
+          : interview
+      );
+
+      setInterviews(updatedInterviews);
+      setFilteredInterviews(updatedInterviews.filter(filterLogic(searchQuery)));
+      setSelectedInterviews([]); 
+
+      await fetchInterviews();
+
+      showToastMessage(`Interviews ${action === 'accept' ? 'accepted' : 'rejected'} successfully!`, 'success');
+    } catch (error) {
+      console.log(`Error in bulk ${action}:`, error);
+      showToastMessage(`Failed to ${action} some interviews.`, 'error');
+    }
+  };
+  
   const handleFeedbackChange = (ID, value) => {
     const updatedInterviews = interviews.map((interview) =>
       interview.ID === ID ? { ...interview, feedback: value } : interview
-    );
-    setInterviews(updatedInterviews);
+  );
+  setInterviews(updatedInterviews);
     setFilteredInterviews(updatedInterviews.filter(filterLogic));
   };
 
@@ -216,38 +262,7 @@ export default function Interviews() {
     interview.name.toLowerCase().includes(query) ||
     interview.status.toLowerCase().includes(query);
 
-  const handleBulkAction = async (action) => {
-    if (selectedInterviews.length === 0) {
-      showToastMessage('No interviews selected for bulk action.', 'error');
-      return;
-    }
 
-    try {
-      const promises = selectedInterviews.map((ID) =>
-        fetch(`/api/interviews/${ID}/${action}`, { method: 'POST' })
-      );
-      const responses = await Promise.all(promises);
-
-      // Check for any failed requests
-      const hasError = responses.some((response) => !response.ok);
-      if (hasError) {
-        throw new Error('One or more bulk actions failed.');
-      }
-
-      const updatedInterviews = interviews.map((interview) =>
-        selectedInterviews.includes(interview.ID)
-          ? { ...interview, status: action === 'accept' ? 'Accepted' : 'Rejected' }
-          : interview
-      );
-      setInterviews(updatedInterviews);
-      setFilteredInterviews(updatedInterviews.filter(filterLogic));
-      setSelectedInterviews([]); // Clear selections after action
-      showToastMessage(`Interviews ${action === 'accept' ? 'accepted' : 'rejected'} successfully!`, 'success');
-    } catch (error) {
-      console.error(`Error in bulk ${action}:`, error);
-      showToastMessage(`Failed to ${action} some interviews.`, 'error');
-    }
-  };
 
   const getColor = (date) => {
     const interviewDate = new Date(date);
@@ -357,7 +372,11 @@ export default function Interviews() {
 
 
         {/* Interviews List */}
-        {interviews.length > 0 ? (
+        {interviews === null ? (
+          <div className="flex justify-center items-center">
+            <img src={spinner} className='w-[200px]' alt="Loading..." />
+          </div>
+        ) : interviews.length > 0 ? (
           <div className="relative flex flex-col rounded-lg bg-white shadow-sm border border-slate-200">
             <nav className="flex flex-col gap-1 p-4" role="list">
               {(filteredInterviews.length > 0 ? filteredInterviews : interviews).map((interview) => (
@@ -382,10 +401,7 @@ export default function Interviews() {
             </nav>
           </div>
         ) : (
-          <div className="flex justify-center items-center">
-            <img src={spinner} className='w-[200px]'></img>
-
-          </div>
+          <div className="text-center text-gray-500">No interviews submitted yet.</div>
         )}
 
       </main>
