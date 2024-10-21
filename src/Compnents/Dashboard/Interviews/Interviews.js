@@ -16,7 +16,7 @@ export default function Interviews() {
   const [filteredInterviews, setFilteredInterviews] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectAll, setSelectAll] = useState(false);
-  const interviewersList = ['John Doe', 'Jane Smith', 'Michael Johnson', 'Emily Davis'];
+  const interviewersList = ['Rady', 'Mnesy', 'Mohamed Ibrahim'];
   const [toggleStatus, setToggleStatus] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
 
