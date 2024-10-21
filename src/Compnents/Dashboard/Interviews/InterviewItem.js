@@ -82,7 +82,7 @@ const InterviewItem = ({
             type="text"
             value={interview.feedback}
             placeholder="Enter feedback..."
-            onChange={(e) => onFeedbackChange(interview.ID, e.target.value)}
+            onChange={(e) => onFeedbackChange(interview.id, e.target.value)}
             className="w-[400px] mt-1 border border-slate-300 rounded-md p-1"
             aria-label={`Feedback for ${interview.name}`}
           />
@@ -96,8 +96,8 @@ const InterviewItem = ({
         ) : (
           <>
             <select
-              value={selectedInterviewer[interview.ID] || ''}
-              onChange={(e) => onAssignInterviewer(interview.ID, e.target.value)}
+              value={selectedInterviewer[interview.id] || ''}
+              onChange={(e) => onAssignInterviewer(interview.id, e.target.value)}
               className="mt-2 border border-slate-300 rounded-md p-1 w-[200px]"
               aria-label={`Select interviewer for ${interview.name}`}
             >

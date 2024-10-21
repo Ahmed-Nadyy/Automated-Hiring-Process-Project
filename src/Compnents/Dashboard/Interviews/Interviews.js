@@ -210,10 +210,15 @@ export default function Interviews() {
 
   const handleFeedbackChange = (ID, value) => {
     const updatedInterviews = interviews.map((interview) =>
-      interview.ID === ID ? { ...interview, feedback: value } : interview
+      interview.id === ID ? { ...interview, feedback: value } : interview
     );
     setInterviews(updatedInterviews);
-    setFilteredInterviews(updatedInterviews.filter(filterLogic));
+    // Only update the filtered interviews if the changed interview is part of the filtered set
+    setFilteredInterviews(prevFiltered => 
+      prevFiltered.map(interview => 
+        interview.id === ID ? { ...interview, feedback: value } : interview
+      )
+    );
   };
 
   const handleAssignInterviewer = async (id, interviewer) => {
