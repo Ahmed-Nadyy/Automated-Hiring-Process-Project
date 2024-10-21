@@ -95,7 +95,7 @@ export default function SubmitForm() {
         <>
             <div className="my-6 flex px-20">
                         <img src={logo} alt="logo" className='w-[120px] h-[120px]' />
-                        
+
                 <div className="grid w-96 sm:grid-cols-1 items-center gap-16 p-8 mx-auto max-w-4xl bg-white shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-md text-[#333] font-[sans-serif]">
                     <div className='flex items-center justify-center'>
                         <h1 className="text-3xl font-extrabold">Hiring Form</h1>
@@ -125,7 +125,7 @@ export default function SubmitForm() {
                         />
                         {!formValid && (
                             <p className="text-red-500 text-sm">
-                                Please make sure all fields are filled and you've selected an available date.
+                                Please make sure all fields are filled.
                             </p>
                         )}
                         <button
