@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import logo from '../../Assets/Images/logo.jpg';
 
 export default function SubmitForm() {
     const [formData, setFormData] = useState({ name: '', email: '', cv: null, dateConfirmed: false });
@@ -92,7 +93,9 @@ export default function SubmitForm() {
 
     return (
         <>
-            <div className="my-6">
+            <div className="my-6 flex px-20">
+                        <img src={logo} alt="logo" className='w-[120px] h-[120px]' />
+                        
                 <div className="grid w-96 sm:grid-cols-1 items-center gap-16 p-8 mx-auto max-w-4xl bg-white shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-md text-[#333] font-[sans-serif]">
                     <div className='flex items-center justify-center'>
                         <h1 className="text-3xl font-extrabold">Hiring Form</h1>
@@ -134,6 +137,7 @@ export default function SubmitForm() {
                         </button>
                     </form>
                 </div>
+                <img src={logo} alt="logo" className='w-[120px] h-[120px]' />
             </div>
             <ToastContainer />
         </>
