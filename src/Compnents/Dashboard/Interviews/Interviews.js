@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import InterviewItem from './InterviewItem';
 import spinner from '../../../Assets/Images/gear-spinner.svg'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import '../../../index.css';
 
 export default function Interviews() {
 
@@ -15,6 +18,8 @@ export default function Interviews() {
   const [selectAll, setSelectAll] = useState(false);
   const interviewersList = ['John Doe', 'Jane Smith', 'Michael Johnson', 'Emily Davis'];
   const [toggleStatus, setToggleStatus] = useState(false);
+  const [isRotated, setIsRotated] = useState(false);
+
 
 
   const fetchInterviews = async () => {
@@ -106,7 +111,7 @@ export default function Interviews() {
       }
 
       const updatedInterviews = interviews.map((interview) =>
-        interview.ID === id ? { ...interview, status: 'Accepted' } : interview
+        interview.id === id ? { ...interview, status: 'Accepted' } : interview
       );
 
       setInterviews(updatedInterviews);
@@ -156,7 +161,7 @@ export default function Interviews() {
     }
   };
 
-  
+
   const handleBulkAction = async (action) => {
     if (selectedInterviews.length === 0) {
       showToastMessage('No interviews selected for bulk action.', 'error');
@@ -174,7 +179,7 @@ export default function Interviews() {
         },
         body: JSON.stringify({
           status: action === 'accept' ? 'Accepted' : 'Rejected',
-          applicantIds: selectedInterviews, 
+          applicantIds: selectedInterviews,
         }),
       });
 
@@ -192,7 +197,7 @@ export default function Interviews() {
 
       setInterviews(updatedInterviews);
       setFilteredInterviews(updatedInterviews.filter(filterLogic(searchQuery)));
-      setSelectedInterviews([]); 
+      setSelectedInterviews([]);
 
       await fetchInterviews();
 
@@ -202,23 +207,23 @@ export default function Interviews() {
       showToastMessage(`Failed to ${action} some interviews.`, 'error');
     }
   };
-  
+
   const handleFeedbackChange = (ID, value) => {
     const updatedInterviews = interviews.map((interview) =>
       interview.ID === ID ? { ...interview, feedback: value } : interview
-  );
-  setInterviews(updatedInterviews);
+    );
+    setInterviews(updatedInterviews);
     setFilteredInterviews(updatedInterviews.filter(filterLogic));
   };
 
-  const handleAssignInterviewer = async (ID, interviewer) => {
+  const handleAssignInterviewer = async (id, interviewer) => {
     if (!interviewer) {
       showToastMessage('Please select an interviewer before assigning.', 'error');
       return;
     }
 
     try {
-      const response = await fetch(`/api/interviews/${ID}/assign-interviewer`, {
+      const response = await fetch(`/api/interviews/${id}/assign-interviewer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ interviewer }),
@@ -228,7 +233,7 @@ export default function Interviews() {
       }
 
       const updatedInterviews = interviews.map((interview) =>
-        interview.ID === ID ? { ...interview, interviewer } : interview
+        interview.id === id ? { ...interview, interviewer } : interview
       );
       setInterviews(updatedInterviews);
       setFilteredInterviews(updatedInterviews.filter(filterLogic));
@@ -262,7 +267,15 @@ export default function Interviews() {
     interview.name.toLowerCase().includes(query) ||
     interview.status.toLowerCase().includes(query);
 
-
+    const handleReload = () => {
+      fetchInterviews();
+  
+      setIsRotated(true);
+  
+      setTimeout(() => {
+        setIsRotated(false);
+      }, 1000);
+    };
 
   const getColor = (date) => {
     const interviewDate = new Date(date);
@@ -277,15 +290,15 @@ export default function Interviews() {
     }
   };
 
-  const handleInterviewerChange = (ID, value) => {
-    setSelectedInterviewer({ ...selectedInterviewer, [ID]: value });
+  const handleInterviewerChange = (id, value) => {
+    setSelectedInterviewer({ ...selectedInterviewer, [id]: value });
   };
 
-  const handleSelectInterview = (ID) => {
+  const handleSelectInterview = (id) => {
     setSelectedInterviews((prevSelected) =>
-      prevSelected.includes(ID)
-        ? prevSelected.filter((selectedID) => selectedID !== ID)
-        : [...prevSelected, ID]
+      prevSelected.includes(id)
+        ? prevSelected.filter((selectedID) => selectedID !== id)
+        : [...prevSelected, id]
     );
   };
 
@@ -338,6 +351,7 @@ export default function Interviews() {
 
         {/* Bulk Action Buttons */}
         <div className="flex justify-between">
+        <div className='flex gap-2 items-center'>
           <button
             onClick={() => handleBulkAction('accept')}
             className="p-2 bg-green-700 text-white rounded-md disabled:bg-green-300"
@@ -345,21 +359,25 @@ export default function Interviews() {
             aria-label="Accept selected interviews"
           >
             Accept Selected
-          </button>
+            </button>
+          </div>
+
 
           {/* Toggle Button */}
-          <label className="relative inline-flex cursor-pointer items-center">
-            <input
-              type="checkbox"
-              checked={toggleStatus}
-              onChange={handleToggleChange}
-              className="peer sr-only"
-            />
-            <div className="peer flex h-9 items-center gap-5 rounded-full bg-orange-600 px-3 after:absolute after:left-1 after:h-6 after:w-10 after:rounded-full after:bg-white/40 after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-focus:outline-none dark:border-red-600 dark:bg-red-700 text-sm text-white">
-              <span>{toggleStatus ? 'ON' : 'OFF'}</span>
-            </div>
-          </label>
-
+          <div className='flex gap-2 items-center'>
+            <label className="relative inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                checked={toggleStatus}
+                onChange={handleToggleChange}
+                className="peer sr-only"
+              />
+              <div className="peer flex h-9 items-center gap-5 rounded-full bg-orange-600 px-3 after:absolute after:left-1 after:h-6 after:w-10 after:rounded-full after:bg-white/40 after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-focus:outline-none dark:border-red-600 dark:bg-red-700 text-sm text-white">
+                <span>{toggleStatus ? 'ON' : 'OFF'}</span>
+              </div>
+            </label>
+            <FontAwesomeIcon className={`rotating-item ${isRotated ? 'rotate' : ''} font-bold h-6 cursor-pointer`} onClick={handleReload} icon={faRotateRight} />
+          </div>
           <button
             onClick={() => handleBulkAction('reject')}
             className="p-2 bg-red-700 text-white rounded-md disabled:bg-red-300"
