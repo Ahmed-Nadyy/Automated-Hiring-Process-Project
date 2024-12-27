@@ -194,14 +194,14 @@ export default function Managing() {
             if (!response.ok) {
                 const error = await response.json();
                 console.error('Failed to delete group:', error);
-                showToastMessage('Failed to delete group.', 'error');
+                showToastMessage('Failed to Update the State.', 'error');
                 return;
             }
 
             const updatedGroups = groupInfo.filter(group => group.id !== groupId);
             setGroupInfo(updatedGroups);
             setFilteredGroups(updatedGroups);
-            showToastMessage('Group deleted successfully.', 'success');
+            showToastMessage('State Updated successfully.', 'success');
         } catch (error) {
             console.error('Error deleting group:', error);
             showToastMessage('Failed to delete group.', 'error');
