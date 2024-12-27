@@ -91,7 +91,7 @@ export default function Managing() {
     const handleFetchRunningSessions = () => {
         setFilteredGroups(runningSessions);
         setIsFinishedGroupsFiltered([]);
-        
+
     }
 
 
@@ -228,7 +228,14 @@ export default function Managing() {
     }, [refreshGroups]);
 
 
-    const triggerRefresh = () => setRefreshGroups(true);
+    const triggerRefresh = () => {
+        const unfinished = groupInfo.filter(group => !group.isFinished);
+        const finished = groupInfo.filter(group => group.isFinished);
+        setFilteredGroups(unfinished); 
+        setIsFinishedGroups(finished);
+        setIsFinishedGroupsFiltered(finished);
+        setRefreshGroups(true);
+    }
 
     return (
         <main className="p-6 sm:h-[85vh] h-[100vh]">
