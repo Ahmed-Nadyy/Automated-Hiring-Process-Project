@@ -47,6 +47,7 @@ export default function Managing() {
                 const data = await response.json();
                 setGroupInfo(data.data);
                 setFilteredGroups(data.data);
+                console.log(groupInfo);
             } else {
                 console.error('Failed to fetch Groups:', response.statusText);
                 showToastMessage('Failed to fetch Groups.', 'error');

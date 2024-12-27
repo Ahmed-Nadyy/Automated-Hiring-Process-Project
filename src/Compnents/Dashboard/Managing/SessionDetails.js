@@ -37,7 +37,7 @@ export default function SessionDetails() {
     }, [id]);
 
     const handleSubmitFeedback = async (groupId, sessionId, feedback, customFeedback) => {
-        // console.log(groupId, sessionId, feedback, customFeedback,sessions);
+        // console.log(groupId, sessionId, feedback, customFeedback);
         try {
             const response = await fetch(
                 "https://daffodil-wary-straw.glitch.me/api/trainingGroup/submitFeedback",

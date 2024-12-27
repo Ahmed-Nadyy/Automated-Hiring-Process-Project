@@ -35,18 +35,12 @@ export default function GroupCard({ groupInfo,handleFinishGroup }) {
                                 </div>
                                 <div className="flex justify-between">
                                     <div className="flex items-center gap-1">
-                                        <label className="font-semibold">Type:</label>
-                                        <p className="text-sm">{group.type}</p>
-                                    </div>
-                                    <div className="flex items-center gap-1">
                                         <label className="font-semibold">Level:</label>
                                         <p className="text-sm">{group.level}</p>
                                     </div>
-                                </div>
-                                <div className="flex justify-between">
                                     <div className="flex items-center gap-1">
                                         <label className="font-semibold">Number of Seats:</label>
-                                        <p className="text-sm">{group.numberOfSeats} seats</p>
+                                        <p className="text-sm">{group.numberOfSeats} </p>
                                     </div>
                                 </div>
                                 <div className="flex justify-between">
