@@ -31,7 +31,7 @@ export default function GroupCard({ groupInfo, handleFinishGroup, isFinished, tr
                             <a href={`/managing/group/${group.id}`} key={index}>
                                 <div className="flex justify-between mb-2">
                                     <p className="text-lg font-bold">{group.name}</p>
-                                    <div className="bg-slate-200 px-2 py-1 rounded-lg">
+                                    <div className="bg-slate-200 px-2 py-1 rounded-lg h-fit">
                                         <p className="text-sm">{group.category}</p>
                                     </div>
                                 </div>
