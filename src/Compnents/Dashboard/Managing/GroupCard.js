@@ -19,7 +19,7 @@ export default function GroupCard({ groupInfo,handleFinishGroup,isFinished,trigg
                             <button 
                             className={`${isFinished ? 'bg-red-500' : 'bg-green-500'} px-2 py-1 font-bold rounded-lg my-2 ${isFinished ? 'hover:bg-red-600' : 'hover:bg-green-600'} `}
                             onClick={() => {
-                                const confirmDelete = window.confirm('Are you sure you want to finish this group?');
+                                const confirmDelete = window.confirm('Are you sure you want to finish/unfinish this group?');
                                 if (confirmDelete) {
                                     handleFinishGroup(group.id);
                                     triggerRefresh();
