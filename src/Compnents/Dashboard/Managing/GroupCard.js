@@ -51,6 +51,13 @@ export default function GroupCard({ groupInfo, handleFinishGroup, isFinished, tr
                                         <p className="text-sm">{group.startDate}</p>
                                     </div>
                                 </div>)}
+                                {group.time && (<div className="flex justify-between">
+                                    <div className="flex items-center gap-1">
+                                        <label className="font-semibold">Time:</label>
+                                        <p className="text-sm">{group.time}</p>
+                                    </div>
+                                </div>)}
+
 
 
                             </a>

@@ -223,18 +223,27 @@ export default function Managing() {
         if (refreshGroups) {
             fetchGroups();
             fetchRunningSessions();
+            const unfinished = groupInfo.filter(group => !group.isFinished);
+            const finished = groupInfo.filter(group => group.isFinished);
+            setFilteredGroups(unfinished);
+            setIsFinishedGroups(finished);
+            setIsFinishedGroupsFiltered(finished);
+            changeTheState();
             setRefreshGroups(false);
         }
     }, [refreshGroups]);
 
 
     const triggerRefresh = () => {
+        setRefreshGroups(true);
+    }
+
+    const changeTheState = () => {
         const unfinished = groupInfo.filter(group => !group.isFinished);
         const finished = groupInfo.filter(group => group.isFinished);
-        setFilteredGroups(unfinished); 
+        setFilteredGroups(unfinished);
         setIsFinishedGroups(finished);
         setIsFinishedGroupsFiltered(finished);
-        setRefreshGroups(true);
     }
 
     return (
