@@ -216,7 +216,7 @@ export default function Managing() {
                         onClick={handleFetchRunningSessions}
                         className="sm:ml-4 ml-0 text-center px-5 py-2 font-bold text-white bg-green-500 hover:bg-green-600 focus:bg-green-500 rounded-lg my-2"
                     >
-                        Running Groups
+                        Sessions For Today
                     </button>
 
 
