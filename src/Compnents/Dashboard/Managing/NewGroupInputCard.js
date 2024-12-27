@@ -8,6 +8,7 @@ export default function NewGroupInputCard({
     onCategoryChange,
     cat,
     handleCreateGroup,
+    triggerRefresh,
 }) {
 
     const [step, setStep] = useState(1);
@@ -143,7 +144,10 @@ export default function NewGroupInputCard({
                             Back
                         </button>
                         <button
-                            onClick={() => handleCreateGroup()}
+                            onClick={() => {
+                                handleCreateGroup();
+                                triggerRefresh();
+                            }}
                             className="text-white bg-gradient-to-r from-black to-blue-500 hover:from-gray-800 hover:to-blue-600 px-4 py-2 rounded-lg"
                         >
                             Create

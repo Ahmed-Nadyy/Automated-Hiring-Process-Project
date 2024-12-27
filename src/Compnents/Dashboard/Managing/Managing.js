@@ -14,6 +14,7 @@ export default function Managing() {
     const [groupInfo, setGroupInfo] = useState(null);
     const [filteredGroups, setFilteredGroups] = useState([]);
     const [runningSessions, setRunningSessions] = useState([]);
+    const [refreshGroups, setRefreshGroups] = useState(false);
 
     const [newGroup, setNewGroup] = useState({
         name: '',
@@ -149,15 +150,17 @@ export default function Managing() {
                 console.log('Failed to create group:', error);
                 return;
             }
-    
+
             const result = await response.json();
             setGroupInfo([...groupInfo, result.data]);
+            fetchGroups();
+            fetchRunningSessions();
             Swal.fire({
                 icon: 'success',
                 title: 'Success',
                 text: 'Group created successfully!',
             });
-    
+            
             setNewGroup({
                 name: '',
                 numberOfWeeks: 0,
@@ -205,6 +208,16 @@ export default function Managing() {
         fetchGroups();
         fetchRunningSessions();
     }, []);
+    useEffect(() => {
+        if (refreshGroups) {
+            fetchGroups();
+            fetchRunningSessions();
+            setRefreshGroups(false);
+        }
+    }, [refreshGroups]);
+    
+    const triggerRefresh = () => setRefreshGroups(true);
+    
     return (
         <main className="p-6 sm:h-[85vh] h-[100vh]">
             <header className="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between border-b-2 rounded-lg">
@@ -260,6 +273,7 @@ export default function Managing() {
                     cat={newGroup.category}
                     onCategoryChange={handleCatChangeForGroup}
                     handleCreateGroup={handleCreateGroup}
+                    triggerRefresh={triggerRefresh}
                 />
             )}
 

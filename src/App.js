@@ -27,7 +27,6 @@ function App() {
           <Route path="/dashboardd" element={  <Dashboard />   } />
           {/* SubmitForm Route */}
           <Route path="/submit-form" element= {<SubmitForm />} />
-
           {/* scheduling dashboard Route */}
           <Route path="/scheduling" element= {<SchedulePicker />} />
            {/* Dynamic Group and session Route */}

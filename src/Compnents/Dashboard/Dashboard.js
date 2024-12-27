@@ -5,7 +5,7 @@ import Interviews from './Interviews/Interviews';
 import Managing from './Managing/Managing';
 
 export default function Dashboard() {
-  const [activeLink, setActiveLink] = useState('interviews');
+  const [activeLink, setActiveLink] = useState('managing');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const handleDrawer = () => setIsDrawerOpen(isDrawerOpen);
   return (
