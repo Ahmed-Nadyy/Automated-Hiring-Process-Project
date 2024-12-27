@@ -144,9 +144,15 @@ export default function SessionDetails() {
                                     key={index}
                                     className="flex flex-col p-4 rounded-md border-b border-slate-300 shadow-sm hover:bg-gray-50"
                                 >
-                                    <div className="mb-2">
-                                        <span className="font-bold">Day:</span> {session.day}
+                                    <div className="mb-2 flex gap-3">
+                                        <span className="font-bold">Day:</span> {session.sessionDay}
                                         <span className="font-bold">Time:</span> {session.time}
+                                    </div>
+                                    <div className="mb-2 flex gap-3">
+                                    <span className="font-bold">Session Number:</span> {session.sessionNumber}
+                                    </div>
+                                    <div className="mb-2 flex gap-3">
+                                        <span className="font-bold">Date:</span> {session.sessionDate}
                                     </div>
                                     <div className="mb-2 flex sm:flex-row flex-col items-center justify-start gap-2">
                                         <span className="font-bold">Feedback: </span>
