@@ -3,7 +3,8 @@ import React from 'react'
 import spinner from '../../../Assets/Images/gear-spinner.svg'
 import err from '../../../Assets/Images/error_file_load-01.png'
 
-export default function GroupCard({ groupInfo,handleFinishGroup }) {
+export default function GroupCard({ groupInfo,handleFinishGroup,isFinished,triggerRefresh }) {
+
     return (
         <>
             {groupInfo === null ? (
@@ -16,15 +17,16 @@ export default function GroupCard({ groupInfo,handleFinishGroup }) {
 
                         <div className="flex flex-col justify-center rounded-lg border-2 border-slate-200 px-4 py-4 w-[310px] h-[175px] hover:bg-slate-50">
                             <button 
-                            className='bg-green-500 px-2 py-1 font-bold rounded-lg my-2 hover:bg-green-600'
+                            className={`${isFinished ? 'bg-red-500' : 'bg-green-500'} px-2 py-1 font-bold rounded-lg my-2 ${isFinished ? 'hover:bg-red-600' : 'hover:bg-green-600'} `}
                             onClick={() => {
                                 const confirmDelete = window.confirm('Are you sure you want to finish this group?');
                                 if (confirmDelete) {
                                     handleFinishGroup(group.id);
+                                    triggerRefresh();
                                 }
                             }}
                             >
-                                finish
+                                {isFinished ? 'unfinish' : 'finish'}
                             </button>
                             <a href={`/managing/group/${group.id}`} key={index}>
                                 <div className="flex justify-between mb-2">

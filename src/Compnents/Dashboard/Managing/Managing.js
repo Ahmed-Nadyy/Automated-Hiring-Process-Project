@@ -15,6 +15,7 @@ export default function Managing() {
     const [filteredGroups, setFilteredGroups] = useState([]);
     const [runningSessions, setRunningSessions] = useState([]);
     const [refreshGroups, setRefreshGroups] = useState(false);
+    const [isFinishedGroups, setIsFinishedGroups] = useState([]);
 
     const [newGroup, setNewGroup] = useState({
         name: '',
@@ -46,9 +47,12 @@ export default function Managing() {
 
             if (response.ok) {
                 const data = await response.json();
-                setGroupInfo(data.data);
-                setFilteredGroups(data.data);
-                console.log(groupInfo);
+                const unfinished = data.data.filter(group => !group.isFinished);
+                const finished = data.data.filter(group => group.isFinished);
+                setGroupInfo(data.data); // Original data (optional if needed for other logic)
+                setFilteredGroups(unfinished); // Unfinished groups for first card
+                setIsFinishedGroups(finished); // Finished groups for second card
+                console.log(data.data);
             } else {
                 console.error('Failed to fetch Groups:', response.statusText);
                 showToastMessage('Failed to fetch Groups.', 'error');
@@ -72,7 +76,6 @@ export default function Managing() {
             if (response.ok) {
                 const data = await response.json();
                 setRunningSessions(data.data);
-                console.log('working...');
             } else {
                 console.error('Failed to fetch Groups:', response.statusText);
                 showToastMessage('Failed to fetch Groups.', 'error');
@@ -114,7 +117,7 @@ export default function Managing() {
             });
             return;
         }
-    
+
         console.log("Data to be sent to the API:", {
             name: newGroup.name,
             level: newGroup.level,
@@ -124,7 +127,7 @@ export default function Managing() {
             seats: newGroup.numberOfSeats,
             initialSessions: newGroup.sessions,
         });
-    
+
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
@@ -139,7 +142,7 @@ export default function Managing() {
                     initialSessions: newGroup.sessions,
                 }),
             });
-    
+
             if (!response.ok) {
                 const error = await response.json();
                 Swal.fire({
@@ -160,7 +163,7 @@ export default function Managing() {
                 title: 'Success',
                 text: 'Group created successfully!',
             });
-            
+
             setNewGroup({
                 name: '',
                 numberOfWeeks: 0,
@@ -180,7 +183,7 @@ export default function Managing() {
             });
         }
     };
-    
+
 
     const handleFinishGroup = async (groupId) => {
         try {
@@ -204,10 +207,12 @@ export default function Managing() {
             showToastMessage('Failed to delete group.', 'error');
         }
     };
+
     useEffect(() => {
         fetchGroups();
         fetchRunningSessions();
     }, []);
+
     useEffect(() => {
         if (refreshGroups) {
             fetchGroups();
@@ -215,9 +220,10 @@ export default function Managing() {
             setRefreshGroups(false);
         }
     }, [refreshGroups]);
-    
+
+
     const triggerRefresh = () => setRefreshGroups(true);
-    
+
     return (
         <main className="p-6 sm:h-[85vh] h-[100vh]">
             <header className="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between border-b-2 rounded-lg">
@@ -277,7 +283,13 @@ export default function Managing() {
                 />
             )}
 
-            <GroupCard groupInfo={filteredGroups} handleFinishGroup={handleFinishGroup} />
+            <GroupCard groupInfo={filteredGroups} handleFinishGroup={handleFinishGroup} triggerRefresh={triggerRefresh} />
+            {isFinishedGroups.length > 0 && (
+                <div className="mt-8">
+                    <h2 className="text-2xl font-bold mb-4 text-center">Finished Groups</h2>
+                    <GroupCard groupInfo={isFinishedGroups} handleFinishGroup={handleFinishGroup} isFinished triggerRefresh={triggerRefresh} />
+                </div>
+            )}
             {toast.visible && (
                 <div id="toast" className={`fixed top-4 right-4 p-4 rounded ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
                     {toast.message}
