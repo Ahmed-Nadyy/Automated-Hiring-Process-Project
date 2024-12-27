@@ -37,6 +37,7 @@ export default function SessionDetails() {
     }, [id]);
 
     const handleSubmitFeedback = async (groupId, sessionId, feedback, customFeedback) => {
+        // console.log(groupId, sessionId, feedback, customFeedback,sessions);
         try {
             const response = await fetch(
                 "https://daffodil-wary-straw.glitch.me/api/trainingGroup/submitFeedback",
@@ -130,6 +131,11 @@ export default function SessionDetails() {
                         </button> */}
                     </div>
                 </div>
+
+
+
+
+
                 {sessions.length > 0 ? (
                     <div className="relative flex flex-col rounded-lg bg-white shadow-sm border border-slate-200">
                         <nav className="flex flex-col gap-4 p-4" role="list">

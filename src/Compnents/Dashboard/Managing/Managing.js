@@ -112,8 +112,17 @@ export default function Managing() {
             });
             return;
         }
-        console.log(newGroup);
-
+    
+        console.log("Data to be sent to the API:", {
+            name: newGroup.name,
+            level: newGroup.level,
+            startDate: newGroup.startDate,
+            numberOfWeeks: newGroup.numberOfWeeks,
+            category: newGroup.category,
+            seats: newGroup.numberOfSeats,
+            initialSessions: newGroup.sessions,
+        });
+    
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
@@ -128,7 +137,7 @@ export default function Managing() {
                     initialSessions: newGroup.sessions,
                 }),
             });
-
+    
             if (!response.ok) {
                 const error = await response.json();
                 Swal.fire({
@@ -136,9 +145,10 @@ export default function Managing() {
                     title: 'Failed',
                     text: error.message || 'Failed to create group. Please try again.',
                 });
+                console.log('Failed to create group:', error);
                 return;
             }
-
+    
             const result = await response.json();
             setGroupInfo([...groupInfo, result.data]);
             Swal.fire({
@@ -146,7 +156,7 @@ export default function Managing() {
                 title: 'Success',
                 text: 'Group created successfully!',
             });
-
+    
             setNewGroup({
                 name: '',
                 numberOfWeeks: 0,
@@ -166,6 +176,7 @@ export default function Managing() {
             });
         }
     };
+    
 
     const handleFinishGroup = async (groupId) => {
         try {

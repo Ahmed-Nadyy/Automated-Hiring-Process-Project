@@ -104,7 +104,7 @@ export default function NewGroupInputCard({
                             <h2 className="text-lg font-bold mb-4">Select Session Times</h2>
                         </div>
                         {/* Session Time Input Form */}
-                        {['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => (
+                        {['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day) => (
                             <div key={day} className="flex items-center mb-4 gap-2">
                                 <input
                                     type="checkbox"
@@ -123,9 +123,6 @@ export default function NewGroupInputCard({
                                 {newGroup.sessions.some((session) => session.day === day) && (
                                     <input
                                         type="time"
-                                        lang="en-GB" // Ensures 24-hour format
-                                        min="00:00" // Earliest time
-                                        max="23:59" // Latest valid time
                                         className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                                         value={newGroup.sessions.find((session) => session.day === day)?.time || ''} // Set value to current time if selected
                                         onChange={(e) => {
