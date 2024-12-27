@@ -16,6 +16,7 @@ export default function Managing() {
     const [runningSessions, setRunningSessions] = useState([]);
     const [refreshGroups, setRefreshGroups] = useState(false);
     const [isFinishedGroups, setIsFinishedGroups] = useState([]);
+    const [isFinishedGroupsFiltered, setIsFinishedGroupsFiltered] = useState([]);
 
     const [newGroup, setNewGroup] = useState({
         name: '',
@@ -52,6 +53,7 @@ export default function Managing() {
                 setGroupInfo(data.data); // Original data (optional if needed for other logic)
                 setFilteredGroups(unfinished); // Unfinished groups for first card
                 setIsFinishedGroups(finished); // Finished groups for second card
+                setIsFinishedGroupsFiltered(finished);
                 console.log(data.data);
             } else {
                 console.error('Failed to fetch Groups:', response.statusText);
@@ -88,6 +90,8 @@ export default function Managing() {
 
     const handleFetchRunningSessions = () => {
         setFilteredGroups(runningSessions);
+        setIsFinishedGroupsFiltered([]);
+        
     }
 
 
@@ -100,8 +104,10 @@ export default function Managing() {
         // Filter groups based on the selected category
         if (newCategory === 'All Categories') {
             setFilteredGroups(groupInfo);
+            setIsFinishedGroupsFiltered(isFinishedGroups);
         } else {
             setFilteredGroups(groupInfo.filter(group => group.category === newCategory));
+            setIsFinishedGroupsFiltered(isFinishedGroups.filter(group => group.category === newCategory));
         }
     };
 
@@ -284,10 +290,10 @@ export default function Managing() {
             )}
 
             <GroupCard groupInfo={filteredGroups} handleFinishGroup={handleFinishGroup} triggerRefresh={triggerRefresh} />
-            {isFinishedGroups.length > 0 && (
+            {isFinishedGroupsFiltered.length > 0 && (
                 <div className="mt-8">
                     <h2 className="text-2xl font-bold mb-4 text-center">Finished Groups</h2>
-                    <GroupCard groupInfo={isFinishedGroups} handleFinishGroup={handleFinishGroup} isFinished triggerRefresh={triggerRefresh} />
+                    <GroupCard groupInfo={isFinishedGroupsFiltered} handleFinishGroup={handleFinishGroup} isFinished triggerRefresh={triggerRefresh} />
                 </div>
             )}
             {toast.visible && (
