@@ -6,11 +6,12 @@ import Managing from './Managing/Managing';
 
 export default function Dashboard() {
   const [activeLink, setActiveLink] = useState('interviews');
-
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const handleDrawer = () => setIsDrawerOpen(isDrawerOpen);
   return (
     <div className='h-[100vh]'>
       <div className='flex h-full'>
-        <aside className="hidden sm:flex sm:flex-col">
+        <aside className={`sm:flex sm:flex-col ${isDrawerOpen ? 'block' : 'hidden'}`}>
           <a href="#" className="inline-flex items-center justify-center h-20 w-20 bg-blue-600 hover:bg-blue-500 focus:bg-blue-500">
             <img className="mx-auto h-25 w-auto" src={logo} alt="Your Company" />
           </a>
@@ -99,7 +100,7 @@ export default function Dashboard() {
           </div>
         </aside>
                 <div className="flex-grow text-gray-800">
-                  <Header /> 
+                  <Header isDrawerOpen={isDrawerOpen} handleDrawer={handleDrawer}/> 
                   <div className=' lg:max-h-[85vh] overflow-y-scroll'>
                     {activeLink === 'interviews' ? <Interviews /> : <Managing />}
                   </div>

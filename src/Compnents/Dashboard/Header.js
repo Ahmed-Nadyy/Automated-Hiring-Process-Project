@@ -4,7 +4,7 @@ import logo from '../../Assets/Images/logo.jpg';
 import { useDispatch } from 'react-redux'; 
 import { logout } from '../../Redux/actions'; 
 
-export default function Header() {
+export default function Header({handleDrawer,isDrawerOpen}) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -16,7 +16,7 @@ export default function Header() {
     return (
         <>
             <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
-                <button className="block sm:hidden relative flex-shrink-0 p-2 mr-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 rounded-full">
+                <button onClick={handleDrawer} className="block sm:hidden relative flex-shrink-0 p-2 mr-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 rounded-full">
                     <span className="sr-only">Menu</span>
                     <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="h-6 w-6">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
