@@ -196,23 +196,78 @@ export default function Managing() {
             const response = await fetch(`https://daffodil-wary-straw.glitch.me/api/trainingGroup/finishGroup/${groupId}`, {
                 method: 'PUT',
             });
-
+    
             if (!response.ok) {
                 const error = await response.json();
-                console.error('Failed to delete group:', error);
-                showToastMessage('Failed to Update the State.', 'error');
+                console.error('Failed to finish group:', error);
+                showToastMessage('Failed to update the group status.', 'error');
                 return;
             }
-
-            const updatedGroups = groupInfo.filter(group => group.id !== groupId);
-            setGroupInfo(updatedGroups);
-            setFilteredGroups(updatedGroups);
-            showToastMessage('State Updated successfully.', 'success');
+    
+            // Update state directly to reflect changes immediately
+            const updatedGroups = groupInfo.map(group => {
+                if (group.id === groupId) {
+                    return { ...group, isFinished: true };
+                }
+                return group;
+            });
+    
+            // Separate unfinished and finished groups again
+            const unfinishedGroups = updatedGroups.filter(group => !group.isFinished);
+            const finishedGroups = updatedGroups.filter(group => group.isFinished);
+    
+            // Update states
+            setGroupInfo(updatedGroups); // Update the full list of groups
+            setFilteredGroups(unfinishedGroups); // Update the filtered unfinished groups
+            setIsFinishedGroups(finishedGroups); // Update the list of finished groups
+            setIsFinishedGroupsFiltered(finishedGroups); // Update the filtered finished groups
+    
+            showToastMessage('Group finished successfully.', 'success');
         } catch (error) {
-            console.error('Error deleting group:', error);
-            showToastMessage('Failed to delete group.', 'error');
+            console.error('Error finishing group:', error);
+            showToastMessage('Failed to update the group status.', 'error');
         }
     };
+
+    const handleUnfinishGroup = async (groupId) => {
+        try {
+            const response = await fetch(`https://daffodil-wary-straw.glitch.me/api/trainingGroup/finishGroup/${groupId}`, {
+                method: 'PUT',
+            });
+    
+            if (!response.ok) {
+                const error = await response.json();
+                console.error('Failed to unfinish group:', error);
+                showToastMessage('Failed to update the group status.', 'error');
+                return;
+            }
+    
+            // Update state directly to reflect changes immediately
+            const updatedGroups = groupInfo.map(group => {
+                if (group.id === groupId) {
+                    return { ...group, isFinished: false };
+                }
+                return group;
+            });
+    
+            // Separate unfinished and finished groups again
+            const unfinishedGroups = updatedGroups.filter(group => !group.isFinished);
+            const finishedGroups = updatedGroups.filter(group => group.isFinished);
+    
+            // Update states
+            setGroupInfo(updatedGroups); // Update the full list of groups
+            setFilteredGroups(unfinishedGroups); // Update the filtered unfinished groups
+            setIsFinishedGroups(finishedGroups); // Update the list of finished groups
+            setIsFinishedGroupsFiltered(finishedGroups); // Update the filtered finished groups
+    
+            showToastMessage('Group un-finished successfully.', 'success');
+        } catch (error) {
+            console.error('Error unfinishing group:', error);
+            showToastMessage('Failed to update the group status.', 'error');
+        }
+    };
+    
+    
 
     useEffect(() => {
         fetchGroups();
@@ -220,31 +275,15 @@ export default function Managing() {
     }, []);
 
     useEffect(() => {
-        if (refreshGroups) {
-            fetchGroups();
-            fetchRunningSessions();
-            const unfinished = groupInfo.filter(group => !group.isFinished);
-            const finished = groupInfo.filter(group => group.isFinished);
-            setFilteredGroups(unfinished);
-            setIsFinishedGroups(finished);
-            setIsFinishedGroupsFiltered(finished);
-            changeTheState();
-            setRefreshGroups(false);
-        }
-    }, [refreshGroups]);
+        const finished = groupInfo?.filter(group => group.isFinished) || [];
+        setIsFinishedGroupsFiltered(finished);
+    }, [groupInfo]);
 
 
     const triggerRefresh = () => {
         setRefreshGroups(true);
     }
 
-    const changeTheState = () => {
-        const unfinished = groupInfo.filter(group => !group.isFinished);
-        const finished = groupInfo.filter(group => group.isFinished);
-        setFilteredGroups(unfinished);
-        setIsFinishedGroups(finished);
-        setIsFinishedGroupsFiltered(finished);
-    }
 
     return (
         <main className="p-6 sm:h-[85vh] h-[100vh]">
@@ -305,11 +344,11 @@ export default function Managing() {
                 />
             )}
 
-            <GroupCard groupInfo={filteredGroups} handleFinishGroup={handleFinishGroup} triggerRefresh={triggerRefresh} />
+            <GroupCard  groupInfo={filteredGroups} handleFinishGroup={handleFinishGroup} triggerRefresh={triggerRefresh} />
             {isFinishedGroupsFiltered.length > 0 && (
                 <div className="mt-8">
                     <h2 className="text-2xl font-bold mb-4 text-center">Finished Groups</h2>
-                    <GroupCard groupInfo={isFinishedGroupsFiltered} handleFinishGroup={handleFinishGroup} isFinished triggerRefresh={triggerRefresh} />
+                    <GroupCard  groupInfo={isFinishedGroupsFiltered} handleFinishGroup={handleUnfinishGroup} isFinished triggerRefresh={triggerRefresh} />
                 </div>
             )}
             {toast.visible && (
