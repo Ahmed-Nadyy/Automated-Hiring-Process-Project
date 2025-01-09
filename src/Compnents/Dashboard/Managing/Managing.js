@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import DropDownList from './DropDownList';
-import NewGroupInputCard from './NewGroupInputCard';
-import GroupCard from './GroupCard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const API_URL = 'https://daffodil-wary-straw.glitch.me/api/trainingGroup/createGroup';
-const API_URL_ForGetGroups = 'https://daffodil-wary-straw.glitch.me/api/trainingGroup/groupsDetails';
-const API_URL_runningSessions = 'https://daffodil-wary-straw.glitch.me/api/trainingGroup/sessionsToday'
+import DropDownList from './DropDownList';
+import NewGroupInputCard from './Grouops/NewGroupInputCard';
+import GroupCard from './Grouops/GroupCard';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+
+
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const API_URL = `${apiUrl}/trainingGroup/createGroup`;
+const API_URL_ForGetGroups = `${apiUrl}/trainingGroup/groupsDetails`;
+const API_URL_runningSessions = `${apiUrl}/trainingGroup/sessionsToday`;
+const API_URL_runningSessionsTomorrow = `${apiUrl}/trainingGroup/sessionsTomorrow`;
+const API_URL_runningSessionsYesterday = `${apiUrl}/trainingGroup/sessionsYesterday`;
 
 export default function Managing() {
     const [cat, setCat] = useState('All Categories');
@@ -14,12 +21,14 @@ export default function Managing() {
     const [groupInfo, setGroupInfo] = useState(null);
     const [filteredGroups, setFilteredGroups] = useState([]);
     const [runningSessions, setRunningSessions] = useState([]);
+    const [yesterdaySessions, setYesterdaySessions] = useState([]);
+    const [tomorrowSessions, setTomorrowSessions] = useState([]);
     const [refreshGroups, setRefreshGroups] = useState(false);
     const [isFinishedGroups, setIsFinishedGroups] = useState([]);
     const [isFinishedGroupsFiltered, setIsFinishedGroupsFiltered] = useState([]);
-
+    const [sessionState, setSessionState] = useState('Sessions For Today');
     const [newGroup, setNewGroup] = useState({
-        name: '',
+        classNumber: 0,
         numberOfWeeks: 0,
         level: 0,
         category: '',
@@ -27,14 +36,11 @@ export default function Managing() {
         startDate: '',
         sessions: [],
     });
-
     const [toast, setToast] = useState({ message: '', type: 'success', visible: false });
-
     const showToastMessage = (message, type = 'success') => {
         setToast({ message, type, visible: true });
         setTimeout(() => setToast({ ...toast, visible: false }), 3000);
     };
-
 
     const fetchGroups = async () => {
         try {
@@ -65,28 +71,53 @@ export default function Managing() {
         }
     };
 
-    const fetchRunningSessions = async () => {
+    const fetchSessions = async (timeframe) => {
+        const API_URLs = {
+            today: API_URL_runningSessions,
+            tomorrow: API_URL_runningSessionsTomorrow,
+            yesterday: API_URL_runningSessionsYesterday,
+        };
+
         try {
-            //   const token = localStorage.getItem('token');
-            const response = await fetch(API_URL_runningSessions, {
+            const response = await fetch(API_URLs[timeframe], {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                headers: { 'Content-Type': 'application/json' },
             });
 
             if (response.ok) {
                 const data = await response.json();
-                setRunningSessions(data.data);
+                if (timeframe === 'today') setRunningSessions(data.data);
+                if (timeframe === 'tomorrow') setTomorrowSessions(data.data);
+                if (timeframe === 'yesterday') setYesterdaySessions(data.data);
+                console.log('running :', data.data);
             } else {
-                console.error('Failed to fetch Groups:', response.statusText);
-                showToastMessage('Failed to fetch Groups.', 'error');
+                console.error(`Failed to fetch sessions for ${timeframe}:`, response.statusText);
+                showToastMessage(`Failed to fetch sessions for ${timeframe}.`, 'error');
             }
         } catch (error) {
-            console.log('Error fetching Groups:', error);
-            showToastMessage('Failed to fetch Groups.', 'error');
+            console.log(`Error fetching sessions for ${timeframe}:`, error);
+            showToastMessage(`Error fetching sessions for ${timeframe}.`, 'error');
         }
     };
+
+
+    const handleSessionsRightNowRunningChange = (option) => {
+        setSessionState(option);
+        switch (option) {
+            case 'Sessions For Today':
+                handleFetchRunningSessions();
+                break;
+            case 'Sessions For Yesterday':
+                handleFetchRunningSessionsForYesterday();
+                break;
+            case 'Sessions For Tomorrow':
+                handleFetchRunningSessionsForTomorrow();
+                break;
+            default:
+                break;
+        }
+    };
+
 
     const handleFetchRunningSessions = () => {
         setFilteredGroups(runningSessions);
@@ -94,7 +125,17 @@ export default function Managing() {
 
     }
 
+    const handleFetchRunningSessionsForYesterday = () => {
+        setFilteredGroups(yesterdaySessions);
+        setIsFinishedGroupsFiltered([]);
 
+    }
+
+    const handleFetchRunningSessionsForTomorrow = () => {
+        setFilteredGroups(tomorrowSessions);
+        setIsFinishedGroupsFiltered([]);
+
+    }
 
     const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -115,7 +156,7 @@ export default function Managing() {
         setNewGroup({ ...newGroup, category: newCategory });
 
     const handleCreateGroup = async () => {
-        if (!newGroup.name || !newGroup.level || !newGroup.startDate || !newGroup.numberOfWeeks || !newGroup.category || !newGroup.numberOfSeats) {
+        if (!newGroup.classNumber || !newGroup.level || !newGroup.startDate || !newGroup.numberOfWeeks || !newGroup.category || !newGroup.numberOfSeats) {
             Swal.fire({
                 icon: 'error',
                 title: 'Missing Information',
@@ -125,7 +166,7 @@ export default function Managing() {
         }
 
         console.log("Data to be sent to the API:", {
-            name: newGroup.name,
+            classNumber: newGroup.classNumber,
             level: newGroup.level,
             startDate: newGroup.startDate,
             numberOfWeeks: newGroup.numberOfWeeks,
@@ -139,7 +180,7 @@ export default function Managing() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: newGroup.name,
+                    classNumber: newGroup.classNumber,
                     level: newGroup.level,
                     startDate: newGroup.startDate,
                     numberOfWeeks: newGroup.numberOfWeeks,
@@ -163,7 +204,9 @@ export default function Managing() {
             const result = await response.json();
             setGroupInfo([...groupInfo, result.data]);
             fetchGroups();
-            fetchRunningSessions();
+            fetchSessions('today');
+            fetchSessions('tomorrow');
+            fetchSessions('yesterday');
             Swal.fire({
                 icon: 'success',
                 title: 'Success',
@@ -171,7 +214,7 @@ export default function Managing() {
             });
 
             setNewGroup({
-                name: '',
+                classNumber: 0,
                 numberOfWeeks: 0,
                 level: 0,
                 category: '',
@@ -190,20 +233,19 @@ export default function Managing() {
         }
     };
 
-
     const handleFinishGroup = async (groupId) => {
         try {
-            const response = await fetch(`https://daffodil-wary-straw.glitch.me/api/trainingGroup/finishGroup/${groupId}`, {
+            const response = await fetch(`${apiUrl}/trainingGroup/finishGroup/${groupId}`, {
                 method: 'PUT',
             });
-    
+
             if (!response.ok) {
                 const error = await response.json();
                 console.error('Failed to finish group:', error);
                 showToastMessage('Failed to update the group status.', 'error');
                 return;
             }
-    
+
             // Update state directly to reflect changes immediately
             const updatedGroups = groupInfo.map(group => {
                 if (group.id === groupId) {
@@ -211,17 +253,17 @@ export default function Managing() {
                 }
                 return group;
             });
-    
+
             // Separate unfinished and finished groups again
             const unfinishedGroups = updatedGroups.filter(group => !group.isFinished);
             const finishedGroups = updatedGroups.filter(group => group.isFinished);
-    
+
             // Update states
             setGroupInfo(updatedGroups); // Update the full list of groups
             setFilteredGroups(unfinishedGroups); // Update the filtered unfinished groups
             setIsFinishedGroups(finishedGroups); // Update the list of finished groups
             setIsFinishedGroupsFiltered(finishedGroups); // Update the filtered finished groups
-    
+
             showToastMessage('Group finished successfully.', 'success');
         } catch (error) {
             console.error('Error finishing group:', error);
@@ -231,17 +273,17 @@ export default function Managing() {
 
     const handleUnfinishGroup = async (groupId) => {
         try {
-            const response = await fetch(`https://daffodil-wary-straw.glitch.me/api/trainingGroup/finishGroup/${groupId}`, {
+            const response = await fetch(`${apiUrl}/trainingGroup/finishGroup/${groupId}`, {
                 method: 'PUT',
             });
-    
+
             if (!response.ok) {
                 const error = await response.json();
                 console.error('Failed to unfinish group:', error);
                 showToastMessage('Failed to update the group status.', 'error');
                 return;
             }
-    
+
             // Update state directly to reflect changes immediately
             const updatedGroups = groupInfo.map(group => {
                 if (group.id === groupId) {
@@ -249,29 +291,29 @@ export default function Managing() {
                 }
                 return group;
             });
-    
+
             // Separate unfinished and finished groups again
             const unfinishedGroups = updatedGroups.filter(group => !group.isFinished);
             const finishedGroups = updatedGroups.filter(group => group.isFinished);
-    
+
             // Update states
             setGroupInfo(updatedGroups); // Update the full list of groups
             setFilteredGroups(unfinishedGroups); // Update the filtered unfinished groups
             setIsFinishedGroups(finishedGroups); // Update the list of finished groups
             setIsFinishedGroupsFiltered(finishedGroups); // Update the filtered finished groups
-    
+
             showToastMessage('Group un-finished successfully.', 'success');
         } catch (error) {
             console.error('Error unfinishing group:', error);
             showToastMessage('Failed to update the group status.', 'error');
         }
     };
-    
-    
 
     useEffect(() => {
         fetchGroups();
-        fetchRunningSessions();
+        fetchSessions('today');
+        fetchSessions('tomorrow');
+        fetchSessions('yesterday');
     }, []);
 
     useEffect(() => {
@@ -279,25 +321,40 @@ export default function Managing() {
         setIsFinishedGroupsFiltered(finished);
     }, [groupInfo]);
 
-
     const triggerRefresh = () => {
         setRefreshGroups(true);
     }
-
 
     return (
         <main className="p-6 sm:h-[85vh] h-[100vh]">
             <header className="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between border-b-2 rounded-lg">
                 <div className='flex flex-row items-center justify-between sm:flex-row w-full sm:w-auto'>
-                    <div className="my-2 bg-gradient-to-tr items-center justify-center h-[40px] from-black via-blue-800 to-blue-500 px-4 py-1 rounded-lg  shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <div className="my-2 bg-gradient-to-tr items-center justify-center h-[40px] from-black via-blue-800 to-blue-500 px-4 py-1 sm:rounded-lg rounded-l-lg  shadow-md hover:shadow-lg transition-shadow duration-300">
                         <h1 className="text-lg font-semibold text-white">{cat}</h1>
                     </div>
-                    <button
+                    {/* <button
                         onClick={handleFetchRunningSessions}
                         className="sm:ml-4 ml-0 text-center px-5 py-2 font-bold text-white bg-green-500 hover:bg-green-600 focus:bg-green-500 rounded-lg my-2"
                     >
                         Sessions For Today
-                    </button>
+                    </button> */}
+                    <div className='flex'>
+                        <select
+                            value={sessionState}
+                            onChange={(e) => setSessionState(e.target.value)}
+                            className="cursor-pointer sm:ml-4 ml-0 px-2 py-2 font-bold text-black border-l-2 border-t-2 border-b-2  border-green-500  sm:rounded-l-lg rounded-r-none my-2"
+                        >
+                            <option>Sessions For Today</option>
+                            <option>Sessions For Yesterday</option>
+                            <option>Sessions For Tomorrow</option>
+                        </select>
+                        <button
+                            onClick={() => handleSessionsRightNowRunningChange(sessionState)}
+                            className="ml-0 text-center px-4 py-2 font-bold text-black border-r-2 border-t-2 border-b-2  border-green-500 rounded-r-lg my-2"
+                        >
+                            <FontAwesomeIcon icon={faMagnifyingGlass} />
+                        </button>
+                    </div>
 
 
 
@@ -344,11 +401,11 @@ export default function Managing() {
                 />
             )}
 
-            <GroupCard  groupInfo={filteredGroups} handleFinishGroup={handleFinishGroup} triggerRefresh={triggerRefresh} />
+            <GroupCard groupInfo={filteredGroups} handleFinishGroup={handleFinishGroup} triggerRefresh={triggerRefresh} />
             {isFinishedGroupsFiltered.length > 0 && (
                 <div className="mt-8">
                     <h2 className="text-2xl font-bold mb-4 text-center">Finished Groups</h2>
-                    <GroupCard  groupInfo={isFinishedGroupsFiltered} handleFinishGroup={handleUnfinishGroup} isFinished triggerRefresh={triggerRefresh} />
+                    <GroupCard groupInfo={isFinishedGroupsFiltered} handleFinishGroup={handleUnfinishGroup} isFinished triggerRefresh={triggerRefresh} />
                 </div>
             )}
             {toast.visible && (

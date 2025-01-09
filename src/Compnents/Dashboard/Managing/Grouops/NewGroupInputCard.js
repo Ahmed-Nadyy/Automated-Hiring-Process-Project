@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DropDownList from './DropDownList';
+import DropDownList from '../DropDownList';
 
 export default function NewGroupInputCard({
     newGroup,
@@ -27,11 +27,12 @@ export default function NewGroupInputCard({
                             <h2 className="text-lg font-bold mb-4">Create a New Group</h2>
                             <DropDownList cat={cat} onCategoryChange={onCategoryChange} />
                         </div>
+                        <label>Class Number: </label>
                         <input
-                            type="text"
-                            placeholder="Group Name"
-                            value={newGroup.name}
-                            onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
+                            type="number"
+                            placeholder="Class Number"
+                            value={newGroup.classNumber}
+                            onChange={(e) => setNewGroup({ ...newGroup, classNumber: e.target.value })}
                             className="w-full mt-2 mb-4 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
@@ -46,7 +47,7 @@ export default function NewGroupInputCard({
                             className="w-full mb-4 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
-                        <label>Number of Weeks: </label>
+                        <label>Number of Sessions: </label>
                         <input
                             type="number"
                             placeholder="number Of Weeks"

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import TimeInput from './TimeInput';
 
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 
 export default function SchedulePicker() {
@@ -24,9 +25,10 @@ export default function SchedulePicker() {
     }
 
     try {
-      const response = await fetch(`https://daffodil-wary-straw.glitch.me/api/schedule/getSchedule?email=${encodeURIComponent(email)}`);
+      const response = await fetch(`${apiUrl}/schedule/getSchedule?email=${encodeURIComponent(email)}`);
       if (response.ok) {
         const data = await response.json();
+        console.log(data.data.schedule);
         setTimeFetched([...timeFetched, data.data.schedule] || timeSchedule);
         setTimeSchedule(data.data.schedule || timeSchedule);
         setIsDrawerOpen(true);
@@ -89,7 +91,7 @@ export default function SchedulePicker() {
     console.log(requestData);
 
     try {
-      const response = await fetch('https://daffodil-wary-straw.glitch.me/api/schedule', {
+      const response = await fetch(`${apiUrl}/schedule`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

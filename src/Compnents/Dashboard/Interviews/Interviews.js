@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import '../../../index.css';
 
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+
 export default function Interviews() {
 
   const [interviews, setInterviews] = useState(null);
@@ -25,7 +27,7 @@ export default function Interviews() {
   const fetchInterviews = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://daffodil-wary-straw.glitch.me/api/applicant', {
+      const response = await fetch(`${apiUrl}/applicant`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +94,7 @@ export default function Interviews() {
   const handleAccept = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://daffodil-wary-straw.glitch.me/api/applicant/update-status`, {
+      const response = await fetch(`${apiUrl}/applicant/update-status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +130,7 @@ export default function Interviews() {
   const handleReject = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://daffodil-wary-straw.glitch.me/api/applicant/update-status`, {
+      const response = await fetch(`${apiUrl}/applicant/update-status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -171,7 +173,7 @@ export default function Interviews() {
     try {
       console.log(selectedInterviews);
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://daffodil-wary-straw.glitch.me/api/applicant/update-status`, {
+      const response = await fetch(`${apiUrl}/applicant/update-status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

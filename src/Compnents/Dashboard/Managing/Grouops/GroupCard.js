@@ -1,7 +1,7 @@
 // import { spinner } from '@material-tailwind/react'
 import React from 'react'
-import spinner from '../../../Assets/Images/gear-spinner.svg'
-import err from '../../../Assets/Images/error_file_load-01.png'
+import spinner from '../../../../Assets/Images/gear-spinner.svg'
+import err from '../../../../Assets/Images/error_file_load-01.png'
 
 export default function GroupCard({ groupInfo, handleFinishGroup, isFinished, triggerRefresh }) {
 

@@ -6,7 +6,9 @@ import Dashboard from './Compnents/Dashboard/Dashboard';
 import Login from './Compnents/Login';
 import SubmitForm from './Compnents/SubmitForm/SubmitForm';
 import SchedulePicker from './Compnents/Scheduling/SchedulePicker';
-import SessionDetails from './Compnents/Dashboard/Managing/SessionDetails';
+import GroupDetails from './Compnents/Dashboard/Managing/Grouops/GroupDetails';
+import HomePage from './Compnents/HomePage/HomePage';
+
 
 function App() {
   const isAuthenticated = useSelector((state) => state.isAuthenticated); 
@@ -30,7 +32,9 @@ function App() {
           {/* scheduling dashboard Route */}
           <Route path="/scheduling" element= {<SchedulePicker />} />
            {/* Dynamic Group and session Route */}
-          <Route path="/managing/group/:id" element={<SessionDetails />} />
+          <Route path="/managing/group/:id" element={<GroupDetails />} />
+            {/* Dynamic Group and session Route */}
+            <Route path="/test" element={<HomePage />} />
         </Routes>
       </Router>
     </div>

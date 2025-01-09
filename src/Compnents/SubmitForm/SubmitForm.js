@@ -3,6 +3,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import logo from '../../Assets/Images/logo.jpg';
 
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+
 export default function SubmitForm() {
     const [formData, setFormData] = useState({ name: '', email: '', cv: null, dateConfirmed: false });
     const [formValid, setFormValid] = useState(true);
@@ -34,7 +36,7 @@ export default function SubmitForm() {
         formSubmissionData.append('cv', formData.cv);
 
         try {
-            const response = await fetch('https://daffodil-wary-straw.glitch.me/api/applicant', {
+            const response = await fetch(`${apiUrl}/applicant`, {
                 method: 'POST',
                 body: formSubmissionData,
             });

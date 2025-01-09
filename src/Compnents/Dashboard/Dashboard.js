@@ -7,7 +7,7 @@ import Managing from './Managing/Managing';
 export default function Dashboard() {
   const [activeLink, setActiveLink] = useState('managing');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const handleDrawer = () => setIsDrawerOpen(isDrawerOpen);
+  const handleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
   return (
     <div className='h-[100vh]'>
       <div className='flex h-full'>

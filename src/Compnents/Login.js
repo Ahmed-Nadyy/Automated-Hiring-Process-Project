@@ -5,6 +5,8 @@ import logo from '../Assets/Images/logo.jpg';
 import { useDispatch } from 'react-redux'; 
 import { login } from '../Redux/actions';
 
+
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -22,7 +24,7 @@ export default function Login() {
         };
 
         try {
-            const response = await fetch('https://daffodil-wary-straw.glitch.me/api/user/login', {
+            const response = await fetch(`${apiUrl}/user/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
