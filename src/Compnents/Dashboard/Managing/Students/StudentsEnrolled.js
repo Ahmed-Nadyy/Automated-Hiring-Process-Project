@@ -8,7 +8,7 @@ export default function StudentsEnrolled({
 }) {
     return (
         <>
-            <div className="container mx-auto px-6 py-8">
+            <div className="container mx-auto px-6 py-2">
                 <div className='flex gap-2 justify-between'>
                     <div className="flex items-center gap-2">
                         <h1 className="text-2xl font-bold ">Students Enrolled</h1>

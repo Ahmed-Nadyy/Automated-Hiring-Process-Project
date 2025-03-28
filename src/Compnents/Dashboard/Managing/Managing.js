@@ -36,11 +36,14 @@ export default function Managing() {
         startDate: '',
         sessions: [],
     });
+
     const [toast, setToast] = useState({ message: '', type: 'success', visible: false });
+
     const showToastMessage = (message, type = 'success') => {
         setToast({ message, type, visible: true });
         setTimeout(() => setToast({ ...toast, visible: false }), 3000);
     };
+
 
     const fetchGroups = async () => {
         try {
@@ -60,7 +63,6 @@ export default function Managing() {
                 setFilteredGroups(unfinished); // Unfinished groups for first card
                 setIsFinishedGroups(finished); // Finished groups for second card
                 setIsFinishedGroupsFiltered(finished);
-                console.log(data.data);
             } else {
                 console.error('Failed to fetch Groups:', response.statusText);
                 showToastMessage('Failed to fetch Groups.', 'error');
@@ -89,7 +91,6 @@ export default function Managing() {
                 if (timeframe === 'today') setRunningSessions(data.data);
                 if (timeframe === 'tomorrow') setTomorrowSessions(data.data);
                 if (timeframe === 'yesterday') setYesterdaySessions(data.data);
-                console.log('running :', data.data);
             } else {
                 console.error(`Failed to fetch sessions for ${timeframe}:`, response.statusText);
                 showToastMessage(`Failed to fetch sessions for ${timeframe}.`, 'error');
@@ -165,15 +166,15 @@ export default function Managing() {
             return;
         }
 
-        console.log("Data to be sent to the API:", {
-            classNumber: newGroup.classNumber,
-            level: newGroup.level,
-            startDate: newGroup.startDate,
-            numberOfWeeks: newGroup.numberOfWeeks,
-            category: newGroup.category,
-            seats: newGroup.numberOfSeats,
-            initialSessions: newGroup.sessions,
-        });
+        // console.log("Data to be sent to the API:", {
+        //     classNumber: newGroup.classNumber,
+        //     level: newGroup.level,
+        //     startDate: newGroup.startDate,
+        //     numberOfWeeks: newGroup.numberOfWeeks,
+        //     category: newGroup.category,
+        //     seats: newGroup.numberOfSeats,
+        //     initialSessions: newGroup.sessions,
+        // });
 
         try {
             const response = await fetch(API_URL, {
@@ -232,6 +233,7 @@ export default function Managing() {
             });
         }
     };
+
 
     const handleFinishGroup = async (groupId) => {
         try {
@@ -309,6 +311,8 @@ export default function Managing() {
         }
     };
 
+
+    
     useEffect(() => {
         fetchGroups();
         fetchSessions('today');

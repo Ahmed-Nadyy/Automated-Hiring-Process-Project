@@ -1,6 +1,7 @@
 import React from 'react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackwardStep, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from 'react-router-dom';
 
 export default function GroupInof({
     groupDetails,
@@ -9,6 +10,7 @@ export default function GroupInof({
     handlePointOfViewChange,
     state,
 }) {
+    const navigate = useNavigate();
     return (
         <>
         <div className='container flex sm:flex-row flex-col justify-between mx-auto px-6 py-8'>
@@ -16,7 +18,7 @@ export default function GroupInof({
                 <div className="flex items-center gap-2">
                     <button
                         className="px-4 py-2 bg-gradient-to-r from-black via-blue-800 to-blue-500 rounded-full text-white transition duration-500 ease-in-out hover:scale-105 hover:bg-slate-800"
-                        onClick={() => window.history.back()}
+                        onClick={() => navigate('/dashboard-managing')}
                     >
                         <FontAwesomeIcon icon={faBackwardStep} />
                     </button>
@@ -24,7 +26,7 @@ export default function GroupInof({
                 </div>
                 <div className="flex sm:justify-between sm:flex-row flex-col w-full sm:items-center items-start">
                     <div>
-                        <p className="text-lg">
+                        <p className="sm:text-lg text-xs">
                             <span className="font-bold">Category: </span>
                             {groupDetails.category} <span> &gt; </span>
                             <span className="font-bold">Group: </span>

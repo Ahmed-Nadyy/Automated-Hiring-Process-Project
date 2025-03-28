@@ -1,6 +1,6 @@
 import React from 'react'
 
-import NoSessionsFounded from "../../../../Assets/Images/NoSessionsFounded.png"; 
+import NoSessionsFounded from "../../../../Assets/Images/NoSessionsFounded.png";
 
 
 export default function SessionDetails({
@@ -9,21 +9,32 @@ export default function SessionDetails({
     state,
     toggleInoutCard,
     handleSubmitFeedback,
+    groupDetails,
 }) {
+
+    const formattedDate = new Date(groupDetails.state.resumeDate).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+
     return (
         <>
-            <div className="container mx-auto px-6 py-8">
-                <div className='flex gap-2 justify-between'>
-                <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold ">Sessions Details</h1> 
-                <span className='text-md font-semibold text-green-500'>(Resumed)</span>
-                </div>
-                <button
-                    className="mb-4 px-4 py-2 h-[40px] bg-gradient-to-r from-black via-blue-800 to-blue-500 rounded-md text-white transition duration-500 hover:scale-95 hover:bg-slate-800"
-                    onClick={toggleInoutCard}
-                >
-                    {state}
-                </button>
+            <div className="container mx-auto px-6 py-2">
+                <div className='flex flex-col justify-center'>
+                    <h1 className="sm:text-2xl text-lg font-bold ">Sessions Details</h1>
+                    <div className='flex gap-2 justify-between items-center mb-3'>
+                        {groupDetails.state.isPaused ?
+                            <span className='text-md font-semibold text-red-600'>Paused untill {formattedDate}</span> :
+                            <span className='text-md font-semibold text-green-600'>Resumed</span>
+                        }
+                        <button
+                            className="px-4 py-2 h-[40px] bg-gradient-to-r from-black via-blue-800 to-blue-500 rounded-md text-white transition duration-500 hover:scale-95 hover:bg-slate-800"
+                            onClick={toggleInoutCard}
+                        >
+                            {state}
+                        </button>
+                    </div>
                 </div>
                 {sessions.length > 0 ? (
                     <div className="relative flex flex-col rounded-lg bg-white shadow-sm border border-slate-200">

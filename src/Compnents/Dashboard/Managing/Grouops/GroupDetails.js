@@ -23,9 +23,15 @@ export default function GroupDetails() {
         { label: "Start Date", type: "date", value: "", name: "startDate" },
         { label: "End Date", type: "date", value: "", name: "endDate" },
     ];
+    const resumeInputs = [
+        { label: "resume Date", type: "date", value: "", name: "resumeDate" },
+    ];
     const [pauseInputsValues, setPauseInputsValues] = useState({
         startDate: "",
         endDate: "",
+    });
+    const [resumeInputsValues, setResumeInputsValues] = useState({
+        resumeDate: "",
     });
 
     const [PointOfView, setPointOfView] = useState("Sessions");
@@ -37,35 +43,36 @@ export default function GroupDetails() {
     const [studentsRequists,setStudentsRequists]= useState([]);
     const [studentsEnrolled,setStudentsEnrolled]= useState([]);
 
-    useEffect(() => {
-        const fetchGroup = async () => {
-            try {
-                const response = await fetch(
-                    `${apiUrl}/trainingGroup/getGroup/${id}`
-                );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch group details");
-                }
-                const data = await response.json();
-                console.log(data);
-                setGroupDetails(data);
-                setSessions(data.sessions || []);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
 
+    const fetchGroup = async () => {
+        try {
+            const response = await fetch(
+                `${apiUrl}/trainingGroup/getGroup/${id}`
+            );
+            if (!response.ok) {
+                throw new Error("Failed to fetch group details");
+            }
+            const data = await response.json();
+            setGroupDetails(data);
+            setSessions(data.sessions || []);
+            setState(data.state.isPaused ? "Resume" : "Pause");
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchGroup();
-    }, [id]);
+    }, [id,state]);
+    
+
 
     const handlePause = async () => {
         // console.log(groupId, pauseInputsValues);
         const groupId = id;
         try {
-            console.log("Making API call to pause group:", groupId);
-            console.log("Payload being sent:", JSON.stringify(pauseInputsValues));
             const response = await fetch(
                 `${apiUrl}/trainingGroup/pauseGroup/${groupId}`,
                 {
@@ -96,6 +103,46 @@ export default function GroupDetails() {
             Swal.fire({
                 title: "Error!",
                 text: "Failed to Pause. Please try again.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
+
+        }
+    };
+
+    const handleResume = async () => {
+        const groupId = id;
+        try {
+            const response = await fetch(
+                `${apiUrl}/trainingGroup/resumeGroup/${groupId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(resumeInputsValues), // Fix: Pass the object directly
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to pause group");
+            }
+
+            Swal.fire({
+                title: "Resumed!",
+                text: "Group has been resumed successfully.",
+                icon: "success",
+                confirmButtonText: "OK",
+            });
+
+            state === "Pause" ? setState("Resume") : setState("Pause");
+            setResumeInputsValues({ startDate: "", endDate: "" });
+            toggleDropdown();
+        } catch (error) {
+            console.error("Error pausing group:", error);
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to Resume. Please try again.",
                 icon: "error",
                 confirmButtonText: "OK",
             });
@@ -146,88 +193,8 @@ export default function GroupDetails() {
         }
     };
 
-    // const handlePuase = async (groupId) => {
-    //     // console.log(groupId, sessionId, feedback, customFeedback);
-    //     try {
-    //         const response = await fetch(
-    //             `${apiUrl}/trainingGroup/pauseGroup/${groupId}`,
-    //             {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 // body: JSON.stringify({ groupId, sessionId, feedback, customFeedback }),
-    //             }
-    //         );
 
-    //         if (!response.ok) {
-    //             throw new Error("Failed to pause group");
-    //         }
-
-    //         // const updatedSessions = sessions.map((session) =>
-    //         //     session.id === sessionId
-    //         //         ? { ...session, feedback, customFeedback }
-    //         //         : session
-    //         // );
-
-    //         // setSessions(updatedSessions);
-    //         // Swal.fire({
-    //         //     title: "Success!",
-    //         //     text: "Feedback submitted successfully!",
-    //         //     icon: "success",
-    //         //     confirmButtonText: "OK",
-    //         // });
-    //     } catch (error) {
-    //         // Swal.fire({
-    //         //     title: "Error!",
-    //         //     text: error.message || "An error occurred while submitting feedback.",
-    //         //     icon: "error",
-    //         //     confirmButtonText: "OK",
-    //         // });
-    //     }
-    // };
-
-
-    const handleResume = async (groupId) => {
-        // console.log(groupId, sessionId, feedback, customFeedback);
-        try {
-            const response = await fetch(
-                `${apiUrl}/trainingGroup/resumeGroup/${groupId}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    // body: JSON.stringify({ groupId, sessionId, feedback, customFeedback }),
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to pause group");
-            }
-
-            // const updatedSessions = sessions.map((session) =>
-            //     session.id === sessionId
-            //         ? { ...session, feedback, customFeedback }
-            //         : session
-            // );
-
-            // setSessions(updatedSessions);
-            // Swal.fire({
-            //     title: "Success!",
-            //     text: "Feedback submitted successfully!",
-            //     icon: "success",
-            //     confirmButtonText: "OK",
-            // });
-        } catch (error) {
-            // Swal.fire({
-            //     title: "Error!",
-            //     text: error.message || "An error occurred while submitting feedback.",
-            //     icon: "error",
-            //     confirmButtonText: "OK",
-            // });
-        }
-    };
+ 
 
     const toggleDropdown = () => setIsInputSessionOpen(!isInputSessionOpen);
 
@@ -250,6 +217,8 @@ export default function GroupDetails() {
 
     const handleCreateSession = () => {
     };
+
+
 
     return (
         <>
@@ -285,7 +254,7 @@ export default function GroupDetails() {
 
 
 
-                {isInputSessionOpen &&
+                {isInputSessionOpen && state === "Pause" &&
                     <SessionInputCard
                         handleAction={handlePause}
                         Inputs={pauseInputs}
@@ -293,6 +262,17 @@ export default function GroupDetails() {
                         toggleInoutCard={setIsInputSessionOpen}
                         InputsValues={pauseInputsValues}
                         setInputsValues={setPauseInputsValues}
+                        groupId={id}
+                    />}
+
+                {isInputSessionOpen && state === "Resume" &&
+                    <SessionInputCard
+                        handleAction={handleResume}
+                        Inputs={resumeInputs}
+                        title={"Resume Group"}
+                        toggleInoutCard={setIsInputSessionOpen}
+                        InputsValues={resumeInputsValues}
+                        setInputsValues={setResumeInputsValues}
                         groupId={id}
                     />}
 

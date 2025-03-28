@@ -28,7 +28,6 @@ export default function SchedulePicker() {
       const response = await fetch(`${apiUrl}/schedule/getSchedule?email=${encodeURIComponent(email)}`);
       if (response.ok) {
         const data = await response.json();
-        console.log(data.data.schedule);
         setTimeFetched([...timeFetched, data.data.schedule] || timeSchedule);
         setTimeSchedule(data.data.schedule || timeSchedule);
         setIsDrawerOpen(true);
@@ -88,7 +87,6 @@ export default function SchedulePicker() {
       email: email,
       timeSchedule: timeSchedule,
     };
-    console.log(requestData);
 
     try {
       const response = await fetch(`${apiUrl}/schedule`, {

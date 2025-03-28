@@ -3,11 +3,19 @@ import logo from '../../Assets/Images/logo.jpg';
 import Header from './Header';
 import Interviews from './Interviews/Interviews';
 import Managing from './Managing/Managing';
+import { faChalkboardUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import CoachesField from './CoachesField/CoachesField';
+import { Navigate, useNavigate } from 'react-router-dom';
 
-export default function Dashboard() {
-  const [activeLink, setActiveLink] = useState('managing');
+export default function Dashboard({ link, activeLink }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const handleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
+  const Navigate = useNavigate();
+
+  const handleClicked = (link) => {
+    Navigate(`/${link}`);
+  }
   return (
     <div className='h-[100vh]'>
       <div className='flex h-full'>
@@ -20,12 +28,11 @@ export default function Dashboard() {
               {/* Dashboard Link */}
               <a
                 href="#"
-                onClick={() => setActiveLink('managing')}
-                className={`inline-flex items-center justify-center py-3 rounded-lg ${
-                  activeLink === 'managing'
-                    ? 'text-blue-600 bg-white'
-                    : 'hover:text-gray-400 hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700'
-                }`}
+                onClick={() => handleClicked("dashboard-managing")}
+                className={`inline-flex items-center justify-center py-3 rounded-lg ${activeLink === 'managing'
+                  ? 'text-blue-600 bg-white'
+                  : 'hover:text-gray-400 hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700'
+                  }`}
               >
                 <span className="sr-only">Managing</span>
                 <svg
@@ -45,12 +52,11 @@ export default function Dashboard() {
               </a>
               <a
                 href="#"
-                onClick={() => setActiveLink('interviews')}
-                className={`inline-flex items-center justify-center py-3 rounded-lg ${
-                  activeLink === 'interviews'
-                    ? 'text-blue-600 bg-white'
-                    : 'hover:text-gray-400 hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700'
-                }`}
+                onClick={() => handleClicked("dashboard-interviews")}
+                className={`inline-flex items-center justify-center py-3 rounded-lg ${activeLink === 'interviews'
+                  ? 'text-blue-600 bg-white'
+                  : 'hover:text-gray-400 hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700'
+                  }`}
               >
                 <span className="sr-only">Interviews</span>
                 <svg
@@ -68,7 +74,17 @@ export default function Dashboard() {
                   />
                 </svg>
               </a>
-
+              <a
+                href="#"
+                onClick={() => handleClicked("dashboard-coaches")}
+                className={`inline-flex items-center justify-center py-3 rounded-lg ${activeLink === 'Coaches'
+                  ? 'text-blue-600 bg-white'
+                  : 'hover:text-gray-400 hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700'
+                  }`}
+              >
+                <span className="sr-only">Coaches Field</span>
+                <FontAwesomeIcon icon={faChalkboardUser} />
+              </a>
               {/* Folders Link */}
             </nav>
 
@@ -99,14 +115,20 @@ export default function Dashboard() {
             </div>
           </div>
         </aside>
-                <div className="flex-grow text-gray-800">
+        {/* <div className="flex-grow text-gray-800">
                   <Header isDrawerOpen={isDrawerOpen} handleDrawer={handleDrawer}/> 
                   <div className=' lg:max-h-[85vh] overflow-y-scroll'>
-                    {activeLink === 'interviews' ? <Interviews /> : <Managing />}
+                    {activeLink === 'interviews' ? 
+                      (<Interviews />) : 
+                      (activeLink === 'managing' ? 
+                        (<Managing />) : 
+                        (<CoachesField />)
+                      )
+                    }
                   </div>
-                </div>
-            </div>
+                </div> */}
+      </div>
 
-        </div>
-    )
+    </div>
+  )
 }

@@ -96,7 +96,7 @@ export default function SubmitForm() {
     return (
         <>
             <div className="my-6 flex px-20">
-                        <img src={logo} alt="logo" className='w-[120px] h-[120px]' />
+                        {/* <img src={logo} alt="logo" className='w-[120px] h-[120px]' /> */}
 
                 <div className="grid w-96 sm:grid-cols-1 items-center gap-16 p-8 mx-auto max-w-4xl bg-white shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-md text-[#333] font-[sans-serif]">
                     <div className='flex items-center justify-center'>
@@ -139,7 +139,7 @@ export default function SubmitForm() {
                         </button>
                     </form>
                 </div>
-                <img src={logo} alt="logo" className='w-[120px] h-[120px]' />
+                {/* <img src={logo} alt="logo" className='w-[120px] h-[120px]' /> */}
             </div>
             <ToastContainer />
         </>

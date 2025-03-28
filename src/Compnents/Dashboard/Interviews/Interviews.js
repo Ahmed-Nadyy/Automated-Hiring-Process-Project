@@ -37,7 +37,6 @@ export default function Interviews() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         const { status } = data;
         setToggleStatus(status);
         setInterviews(data);
@@ -171,7 +170,6 @@ export default function Interviews() {
     }
 
     try {
-      console.log(selectedInterviews);
       const token = localStorage.getItem('token');
       const response = await fetch(`${apiUrl}/applicant/update-status`, {
         method: 'PUT',

@@ -28,7 +28,6 @@ export default function SchedulePicker() {
             const response = await fetch(`${apiUrl}/schedule/getSchedule?email=${encodeURIComponent(email)}`);
             if (response.ok) {
                 const data = await response.json();
-                console.log(data.data.schedule); // Debugging: Check structure of the fetched schedule
 
                 // Merge fetched schedule with the initial state structure
                 const updatedSchedule = { ...timeSchedule, ...data.data.schedule };
@@ -99,7 +98,6 @@ export default function SchedulePicker() {
             email: email,
             timeSchedule: timeSchedule,
         };
-        console.log(requestData);
 
         try {
             const response = await fetch(`${apiUrl}/schedule`, {
