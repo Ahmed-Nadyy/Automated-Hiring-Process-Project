@@ -1,4 +1,10 @@
 import React, { useState } from 'react';
+import FeedbackTypeHeader from './FeedbackAnalysisComponents/FeedbackTypeHeader';
+import CpuFeedbackTable from './FeedbackAnalysisComponents/CpuFeedbackTable';
+import InterviewsTable from './FeedbackAnalysisComponents/InterviewsTable';
+import OtherFeedbackTable from './FeedbackAnalysisComponents/OtherFeedbackTable';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export default function FeedbackAnalysis({ feedbackAnalysis }) {
     // Group feedback by training type
@@ -31,10 +37,8 @@ export default function FeedbackAnalysis({ feedbackAnalysis }) {
                 preparedData[type][key].sessions.push(item);
             });
         } else if (type === 'Interviews') {
-            // For interviews, keep all details
             preparedData[type] = items;
         } else {
-            // For other types, just sum total hours
             preparedData[type] = {
                 totalHours: items.reduce((sum, item) => sum + (parseFloat(item.data.duration) || 0), 0),
                 sessions: items
@@ -53,8 +57,10 @@ export default function FeedbackAnalysis({ feedbackAnalysis }) {
         return sum;
     }, 0);
 
-    // State to track expanded sessions
+    // State to track expanded sessions and editing state
     const [expandedSessions, setExpandedSessions] = useState(new Set());
+    const [editingSession, setEditingSession] = useState(null);
+    const [editData, setEditData] = useState(null);
 
     const toggleExpand = (sessionId) => {
         const newExpanded = new Set(expandedSessions);
@@ -66,191 +72,122 @@ export default function FeedbackAnalysis({ feedbackAnalysis }) {
         setExpandedSessions(newExpanded);
     };
 
+    const handleEditSubmit = async (e, coachId, sessionId) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`${API_BASE_URL}/coach/feedback/update/${coachId}/${sessionId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ feedbackData: editData }),
+            });
+    
+            if (response.ok) {
+                const updatedData = await response.json();
+                // Update the feedbackAnalysis data with the new feedback
+                const updatedFeedbackAnalysis = feedbackAnalysis.map(item => 
+                    item._id === sessionId ? { ...item, data: editData } : item
+                );
+                
+                // Re-run the data preparation logic
+                const newGroupedByType = {};
+                updatedFeedbackAnalysis.forEach(item => {
+                    const { trainingType } = item.data;
+                    if (!newGroupedByType[trainingType]) {
+                        newGroupedByType[trainingType] = [];
+                    }
+                    newGroupedByType[trainingType].push(item);
+                });
+
+                // Update the prepared data
+                Object.entries(newGroupedByType).forEach(([type, items]) => {
+                    preparedData[type] = {};
+
+                    if (type === 'CPU - {PST University}') {
+                        items.forEach(item => {
+                            const { wave, plan, level } = item.data;
+                            const key = `${wave} ${plan} ${level}`;
+                            if (!preparedData[type][key]) {
+                                preparedData[type][key] = {
+                                    totalHours: 0,
+                                    sessions: []
+                                };
+                            }
+                            preparedData[type][key].totalHours += parseFloat(item.data.duration) || 0;
+                            preparedData[type][key].sessions.push(item);
+                        });
+                    } else if (type === 'Interviews') {
+                        preparedData[type] = items;
+                    } else {
+                        preparedData[type] = {
+                            totalHours: items.reduce((sum, item) => sum + (parseFloat(item.data.duration) || 0), 0),
+                            sessions: items
+                        };
+                    }
+                });
+
+                setEditingSession(null);
+                setEditData(null);
+                // Force a re-render
+                setExpandedSessions(new Set(expandedSessions));
+                alert('Feedback updated successfully!');
+            } else {
+                alert('Failed to update feedback');
+            }
+        } catch (error) {
+            console.error('Error updating feedback:', error);
+            alert('Error updating feedback');
+        }
+    };
+
+    const cancelEdit = () => {
+        setEditingSession(null);
+        setEditData(null);
+    };
+
     return (
         <div className="overflow-x-auto overflow-y-auto sm:h-[460px] mt-4">
             {Object.keys(preparedData).length > 0 ? (
                 <>
                     {Object.entries(preparedData).map(([type, data]) => (
                         <div key={type}>
-                            {/* Type header */}
-                            <div className="bg-gray-100 p-2 font-bold text-lg mb-2">
-                                {type}
-                            </div>
-
+                            <FeedbackTypeHeader type={type} />
+                            
                             {type === 'CPU - {PST University}' ? (
-                                // CPU specific display
                                 Object.entries(data).map(([key, value]) => (
-                                    <div key={key} className='bg-gray-200 mx-8'>
-                                        <div className="bg-gray-200 p-2 font-medium text-gray-700 mb-2">
-                                            {key} - Total: {value.totalHours} h
-                                        </div>
-                                        <table className="min-w-full bg-white border-2 my-2">
-                                            <thead className="bg-gray-50 border-b border-2">
-                                                <tr>
-                                                    <th className="py-2 px-4 border-b">Date</th>
-                                                    <th className="py-2 px-4 border-b">Details</th>
-                                                    <th className="py-2 px-4 border-b">Hours</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {value.sessions.map((session, index) => (
-                                                    <React.Fragment key={index}>
-                                                        <tr 
-                                                            key={index} 
-                                                            className='border-b-2 cursor-pointer '
-                                                            onClick={() => toggleExpand(session._id)}
-                                                        >
-                                                            <td className="py-2 px-4 border-b">
-                                                                {new Date(session.date).toLocaleDateString()}
-                                                            </td>
-                                                            <td className="py-2 px-4 border-b">
-                                                                {/* Show summary when collapsed */}
-                                                                {!expandedSessions.has(session._id) && (
-                                                                    <div className="flex flex-col items-center">
-                                                                        <span>Click to expand</span>
-                                                                        {/* <span> {session.data.wave} - {session.data.plan} - {session.data.level} </span> */}
-                                                                    </div>
-                                                                )}
-                                                            </td>
-                                                            <td className="py-2 px-4 border-b">
-                                                                {session.data.duration} hours
-                                                            </td>
-                                                        </tr>
-                                                        
-                                                        {expandedSessions.has(session._id) && (
-                                                            <tr key={`${index}-details`}>
-                                                                <td colSpan={3} className="p-4 border-b">
-                                                                    <table className="w-full divide-y divide-gray-200 border-2">
-                                                                        <tbody>
-                                                                            {Object.entries(session.data).map(([key, value]) => (
-                                                                                key !== 'trainingType' && (
-                                                                                    <tr key={key} className="border-b-2">
-                                                                                        <td className="px-2 py-1 font-medium text-gray-700 w-1/3 border-b-2">
-                                                                                            {key.split(/(?=[A-Z])/).join(' ').replace(/^\w/, c => c.toUpperCase())}
-                                                                                        </td>
-                                                                                        <td className="px-2 py-1 text-gray-600 border-b-2">
-                                                                                            {value}
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                )
-                                                                            ))}
-                                                                        </tbody>
-                                                                    </table>
-                                                                </td>
-                                                            </tr>
-                                                        )}
-                                                    </React.Fragment>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <CpuFeedbackTable
+                                        key={key}
+                                        keyProp={key}
+                                        value={value}
+                                        toggleExpand={toggleExpand}
+                                        expandedSessions={expandedSessions}
+                                        editingSession={editingSession}
+                                        editData={editData}
+                                        setEditData={setEditData}
+                                        handleEditSubmit={handleEditSubmit}
+                                        cancelEdit={cancelEdit}
+                                        setEditingSession={setEditingSession}
+                                    />
                                 ))
                             ) : type === 'Interviews' ? (
-                                // Interviews display
-                                <div className='bg-gray-200  mx-8'>
-                                <table className="min-w-full bg-white border-2 my-2">
-                                    <thead className="bg-gray-50 border-b border-2">
-                                        <tr>
-                                            <th className="py-2 px-4 border-b">Date</th>
-                                            <th className="py-2 px-4 border-b">Student</th>
-                                            <th className="py-2 px-4 border-b">Email</th>
-                                            <th className="py-2 px-4 border-b">Hours</th>
-                                            <th className="py-2 px-4 border-b">Notes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {data.map((session, index) => (
-                                            <tr key={index} className='border-b-2'>
-                                                <td className="py-2 px-4 border-b">
-                                                    {new Date(session.date).toLocaleDateString()}
-                                                </td>
-                                                <td className="py-2 px-4 border-b">
-                                                    {session.data.studentName}
-                                                </td>
-                                                <td className="py-2 px-4 border-b">
-                                                    {session.data.studentEmail}
-                                                </td>
-                                                <td className="py-2 px-4 border-b">
-                                                    {session.data.duration} hours
-                                                </td>
-                                                <td className="py-2 px-4 border-b">
-                                                    {session.data.notes}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                </div>
+                                <InterviewsTable data={data} />
                             ) : (
-                                // Other types display
-                                <div className='bg-gray-200  mx-8'>
-                                <div className="bg-gray-200 p-2 font-medium text-gray-700 mb-2">
-                                    Total: {data.totalHours} h
-                                </div>
-                                <table className="min-w-full bg-white border-2 my-2">
-                                    <thead className="bg-gray-50 border-b border-2">
-                                        <tr>
-                                            <th className="py-2 px-4 border-b">Date</th>
-                                            <th className="py-2 px-4 border-b">Details</th>
-                                            <th className="py-2 px-4 border-b">Hours</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {data.sessions.map((session, index) => (
-                                            <React.Fragment key={index}>
-                                                <tr 
-                                                    key={index} 
-                                                    className='border-b-2 cursor-pointer'
-                                                    onClick={() => toggleExpand(session._id)}
-                                                >
-                                                    <td className="py-2 px-4 border-b">
-                                                        {new Date(session.date).toLocaleDateString()}
-                                                    </td>
-                                                    <td className="py-2 px-4 border-b">
-                                                        {/* Show summary when collapsed */}
-                                                        {!expandedSessions.has(session._id) && (
-                                                            <div className="flex flex-col items-center">
-                                                                <span>Click to expand</span>
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                    <td className="py-2 px-4 border-b">
-                                                        {session.data.duration} hours
-                                                    </td>
-                                                </tr>
-                                                
-                                                {expandedSessions.has(session._id) && (
-                                                    <tr key={`${index}-details`}>
-                                                        <td colSpan={3} className="p-4 border-b">
-                                                            <table className="w-full divide-y divide-gray-200 border-2">
-                                                                <tbody>
-                                                                    {Object.entries(session.data).map(([key, value]) => (
-                                                                        key !== 'trainingType' && (
-                                                                            <tr key={key} className="border-b-2">
-                                                                                <td className="px-2 py-1 font-medium text-gray-700 w-1/3 border-b-2">
-                                                                                    {key.split(/(?=[A-Z])/).join(' ').replace(/^\w/, c => c.toUpperCase())}
-                                                                                </td>
-                                                                                <td className="px-2 py-1 text-gray-600 border-b-2">
-                                                                                    {value}
-                                                                                </td>
-                                                                            </tr>
-                                                                        )
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </React.Fragment>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            
-                                </div>
-                        )}
+                                <OtherFeedbackTable
+                                    data={data}
+                                    toggleExpand={toggleExpand}
+                                    expandedSessions={expandedSessions}
+                                    editingSession={editingSession}
+                                    editData={editData}
+                                    setEditData={setEditData}
+                                    handleEditSubmit={handleEditSubmit}
+                                    cancelEdit={cancelEdit}
+                                    setEditingSession={setEditingSession}
+                                />
+                            )}
                         </div>
                     ))}
-
+                    
                     {/* Overall total */}
                     <div className="bg-gray-200 p-2 font-bold text-lg mt-4">
                         <table className="min-w-full">

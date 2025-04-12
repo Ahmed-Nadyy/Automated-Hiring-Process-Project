@@ -23,6 +23,17 @@ export const deleteCoach = async (id) => {
     return response.json();
 };
 
+export const updateCoach = async (id, coachData) => {
+    const response = await fetch(`${API_BASE_URL}/coach/update/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(coachData),
+    });
+    return response.json();
+};
+
 // new api fun
 
 export const getCoachById = async (id) => {

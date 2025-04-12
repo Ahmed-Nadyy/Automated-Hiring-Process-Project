@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getCoachById, getFeedbackHistory, getFeedbackAnalysis } from '../api/coachApi'; 
 import Header from '../../Header';
-import Dashboard from '../../Dashboard';
+// import Dashboard from '../../Dashboard';
 import FeedbackHistory from './FeedbackHistory';
 import FeedbackAnalysis from './FeedbackAnalysis';
 
 export default function DisplayCoachDetails() {
     const { coachname, id } = useParams();
-    const [activeLink] = useState('Coaches');
+    // const [activeLink] = useState('Coaches');
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [coachData, setCoachData] = useState(null);
     const [feedbackHistory, setFeedbackHistory] = useState([]);
@@ -17,9 +17,9 @@ export default function DisplayCoachDetails() {
     const [error, setError] = useState(null);
     const [btnClicked, setBtnClicked] = useState('Feedback Analysis');
 
-    const handleBtnClick = (btnName) => {
-        setBtnClicked(btnName);
-    };
+    // const handleBtnClick = (btnName) => {
+    //     setBtnClicked(btnName);
+    // };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,7 +54,7 @@ export default function DisplayCoachDetails() {
     return (
         <div className='h-[100vh]'>
             <div className='flex h-full'>
-                <Dashboard activeLink={activeLink} />
+                {/* <Dashboard activeLink={activeLink} /> */}
                 <div className="flex-grow text-gray-800">
                     <Header isDrawerOpen={isDrawerOpen} handleDrawer={handleDrawer} />
                     

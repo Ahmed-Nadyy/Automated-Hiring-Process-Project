@@ -46,7 +46,7 @@ function App() {
           {/* Dynamic Group and session Route */}
           <Route path="/managing/group/:id" element={<GroupDetails />} />
           {/* Dynamic Group and session Route */}
-          <Route path="/test" element={<HomePage />} />
+          {/* <Route path="/test" element={<HomePage />} /> */}
           {/* Student Details Route */}
           <Route path="/students/:id" element={<StudentDetails />} />
           {/* Coches Feedback Route */}

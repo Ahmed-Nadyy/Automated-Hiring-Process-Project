@@ -37,7 +37,7 @@ export default function Login() {
                 const token = data.token;
                 localStorage.setItem('token', token);
                 dispatch(login());
-                navigate('/dashboard-managing');
+                navigate('/dashboard-coaches');
             } else if (response.status === 401) {
                 setErrorMessage('Invalid credentials');
             } else {

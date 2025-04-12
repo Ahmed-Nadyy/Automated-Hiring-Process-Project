@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getCoaches, deleteCoach, getUnpaidCoaches, searchCoachesByMonth, markFeedbackAsPaid } from "../api/coachApi";
+import { updateCoach, getCoaches, deleteCoach, getUnpaidCoaches, searchCoachesByMonth, markFeedbackAsPaid } from "../api/coachApi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,7 @@ const DisplayCoaches = ({ refreshKey }) => {
     const [searchYear, setSearchYear] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isPaying, setIsPaying] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [paymentDetails, setPaymentDetails] = useState({
         salaryDeduction: 0,
         bonus: 0,
@@ -51,6 +52,23 @@ const DisplayCoaches = ({ refreshKey }) => {
         fetchUnpaidCoaches();
     }, [refreshKey]);
 
+    const handleEdit = async (id, coachData) => {
+        setIsEditing(true);
+        try {
+            await updateCoach(id, coachData);
+            // Refresh coaches list
+            const data = await getCoaches();
+            setCoaches(data);
+            toast.success("Coach updated successfully!");
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Error updating coach:", error);
+            toast.error("Failed to update coach.");
+        } finally {
+            setIsEditing(false);
+        }
+    };
+
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this coach?")) return;
         setIsDeleting(true);
@@ -69,6 +87,10 @@ const DisplayCoaches = ({ refreshKey }) => {
 
     const handleClicked = (coach) => {
         navigate(`/dashboard-coaches/coach-analysis/${coach.coachname}/${coach._id}`);
+    };
+
+    const handleSearchClicked = (coach) => {
+        navigate(`/dashboard-coaches/coach-analysis/${coach.coachname}/${coach.coachId}`);
     };
 
     const handleClickedUnpaid = (coach) => {
@@ -181,6 +203,8 @@ const DisplayCoaches = ({ refreshKey }) => {
             {view === "total" && (
                 <TotalCoachesTable
                     coaches={coaches}
+                    handleEdit={handleEdit}
+                    isEditing={isEditing}
                     handleDelete={handleDelete}
                     handleClicked={handleClicked}
                     isDeleting={isDeleting}
@@ -190,9 +214,7 @@ const DisplayCoaches = ({ refreshKey }) => {
             {view === "search" && (
                 <SearchCoachesTable
                     searchResults={searchResults}
-                    handleDelete={handleDelete}
-                    handleClicked={handleClicked}
-                    isDeleting={isDeleting}
+                    handleClicked={handleSearchClicked}
                 />
             )}
         </div>
